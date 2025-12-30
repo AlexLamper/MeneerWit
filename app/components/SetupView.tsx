@@ -21,63 +21,63 @@ export default function SetupView({ playerCount, setPlayerCount, roles, setRoles
   };
 
   return (
-    <div className="flex flex-col h-screen p-6 bg-background overflow-hidden">
-      <button onClick={onBack} className="mb-8 text-muted-foreground font-bold text-left hover:text-foreground transition-colors flex items-center gap-2">
+    <div className="flex flex-col h-screen p-4 sm:p-6 bg-background overflow-hidden">
+      <button onClick={onBack} className="mb-4 sm:mb-8 text-muted-foreground font-bold text-left hover:text-foreground transition-colors flex items-center gap-2">
         <span>←</span> Terug
       </button>
       
-      <h2 className="text-3xl font-bold mb-8">Spelconfiguratie</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8">Spelconfiguratie</h2>
       
       <div className="flex-1 overflow-y-auto pr-2">
-        <div className="mb-12">
-          <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs mb-4">Aantal spelers</p>
-          <div className="text-5xl font-bold mb-4">{playerCount} spelers</div>
+        <div className="mb-8 sm:mb-12">
+          <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs mb-2 sm:mb-4">Aantal spelers</p>
+          <div className="text-4xl sm:text-5xl font-bold mb-4">{playerCount} spelers</div>
           <input 
             type="range" 
             min="3" 
             max="20" 
             value={playerCount} 
             onChange={(e) => setPlayerCount(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-black dark:accent-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="w-full h-4 sm:h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-black dark:accent-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           />
         </div>
 
-        <div className="space-y-4 sm:space-y-6 mb-12">
+        <div className="space-y-3 sm:space-y-6 mb-8 sm:mb-12">
           <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Rolverdeling</p>
           
-          <div className="flex items-center justify-between p-4 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+          <div className="flex items-center justify-between p-3 sm:p-4 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
             <div>
-              <div className="font-bold">Burgers</div>
-              <div className="text-sm text-muted-foreground">Hebben het woord</div>
+              <div className="font-bold text-sm sm:text-base">Burgers</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Hebben het woord</div>
             </div>
-            <div className="flex items-center gap-4">
-              <button onClick={() => updateRole("burgers", -1)} className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">-</button>
-              <span className="font-bold text-xl w-6 text-center">{roles.burgers}</span>
-              <button onClick={() => updateRole("burgers", 1)} className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">+</button>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <button onClick={() => updateRole("burgers", -1)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">-</button>
+              <span className="font-bold text-lg sm:text-xl w-6 text-center">{roles.burgers}</span>
+              <button onClick={() => updateRole("burgers", 1)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">+</button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+          <div className="flex items-center justify-between p-3 sm:p-4 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
             <div>
-              <div className="font-bold">Undercovers</div>
-              <div className="text-sm text-muted-foreground">Hebben een ander woord</div>
+              <div className="font-bold text-sm sm:text-base">Undercovers</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Hebben een ander woord</div>
             </div>
-            <div className="flex items-center gap-4">
-              <button onClick={() => updateRole("undercovers", -1)} className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">-</button>
-              <span className="font-bold text-xl w-6 text-center">{roles.undercovers}</span>
-              <button onClick={() => updateRole("undercovers", 1)} className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">+</button>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <button onClick={() => updateRole("undercovers", -1)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">-</button>
+              <span className="font-bold text-lg sm:text-xl w-6 text-center">{roles.undercovers}</span>
+              <button onClick={() => updateRole("undercovers", 1)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">+</button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+          <div className="flex items-center justify-between p-3 sm:p-4 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
             <div>
-              <div className="font-bold">Mister White</div>
-              <div className="text-sm text-muted-foreground">Heeft geen woord</div>
+              <div className="font-bold text-sm sm:text-base">Mister White</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Heeft geen woord</div>
             </div>
-            <div className="flex items-center gap-4">
-              <button onClick={() => updateRole("misterWhites", -1)} className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">-</button>
-              <span className="font-bold text-xl w-6 text-center">{roles.misterWhites}</span>
-              <button onClick={() => updateRole("misterWhites", 1)} className="w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">+</button>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <button onClick={() => updateRole("misterWhites", -1)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">-</button>
+              <span className="font-bold text-lg sm:text-xl w-6 text-center">{roles.misterWhites}</span>
+              <button onClick={() => updateRole("misterWhites", 1)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-border flex items-center justify-center font-bold hover:border-primary hover:bg-primary hover:text-primary-foreground transition-all active:scale-90">+</button>
             </div>
           </div>
         </div>

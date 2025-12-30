@@ -74,8 +74,9 @@ export default function Home() {
     setMisterWhiteGuess("");
     
     // Pre-fill input with saved name if available, otherwise default
-    const nextName = savedNames[0] || `Speler 1`;
-    setPlayerNameInput(nextName);
+    // const nextName = savedNames[0] || `Speler 1`;
+    // Don't pre-fill name to encourage typing or selecting
+    setPlayerNameInput("");
   };
 
   const handleNextPlayer = () => {
@@ -98,7 +99,8 @@ export default function Home() {
       setCurrentPlayerIndex(nextIndex);
       setIsCardOpen(false);
       // Pre-fill next name
-      setPlayerNameInput(savedNames[nextIndex] || `Speler ${nextIndex + 1}`);
+      // setPlayerNameInput(savedNames[nextIndex] || `Speler ${nextIndex + 1}`);
+      setPlayerNameInput("");
     } else {
       setView("game-round");
     }

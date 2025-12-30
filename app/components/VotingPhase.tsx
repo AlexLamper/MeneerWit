@@ -51,7 +51,7 @@ export default function VotingPhase({
   return (
     <div className="flex flex-col h-screen p-4 sm:p-6 bg-background animate-fade-in overflow-hidden">
       <h2 className="text-2xl sm:text-3xl font-bold mb-2">Wie is verdacht?</h2>
-      <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">Klik op een speler om te stemmen.</p>
+      <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">Klik op een speler om te stemmen. De speler met de meeste stemmen wordt geëlimineerd.</p>
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">
         <div className="grid grid-cols-2 gap-2 sm:gap-4">
@@ -60,7 +60,7 @@ export default function VotingPhase({
               key={player.id}
               disabled={player.isEliminated}
               onClick={() => !player.isEliminated && handlePlayerClick(player)}
-              className={`p-2 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
+              className={`p-2 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left min-h-[3.5rem] sm:min-h-0 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
             >
               <div className={`w-8 h-8 sm:w-12 sm:h-12 shrink-0 rounded-full flex items-center justify-center mr-2 sm:mr-3 text-sm sm:text-2xl transition-colors ${player.isEliminated ? 'bg-secondary' : 'bg-primary text-primary-foreground group-hover:scale-110'}`}>
                 {player.isEliminated ? '💀' : '🗳️'}

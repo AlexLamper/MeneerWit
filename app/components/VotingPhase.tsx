@@ -54,20 +54,22 @@ export default function VotingPhase({
       <p className="text-muted-foreground mb-8">Klik op een speler om te stemmen.</p>
       
       <div className="flex-1 overflow-y-auto pr-2 mb-8">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {gameState.players.map(player => (
             <button 
               key={player.id}
               disabled={player.isEliminated}
               onClick={() => !player.isEliminated && handlePlayerClick(player)}
-              className={`p-4 rounded-3xl border-2 transition-all relative group aspect-square flex flex-col items-center justify-center text-center ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
+              className={`p-2 sm:p-4 rounded-2xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
             >
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 text-2xl transition-colors ${player.isEliminated ? 'bg-secondary' : 'bg-primary text-primary-foreground group-hover:scale-110'}`}>
+              <div className={`w-8 h-8 sm:w-12 sm:h-12 shrink-0 rounded-full flex items-center justify-center mr-2 sm:mr-3 text-sm sm:text-2xl transition-colors ${player.isEliminated ? 'bg-secondary' : 'bg-primary text-primary-foreground group-hover:scale-110'}`}>
                 {player.isEliminated ? '💀' : '🗳️'}
               </div>
-              <div className="font-bold truncate w-full px-2 text-lg">{player.name}</div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-1">
-                {player.isEliminated ? 'Geëlimineerd' : 'Stemmen'}
+              <div className="min-w-0 flex-1">
+                <div className="font-bold truncate text-sm sm:text-lg leading-tight">{player.name}</div>
+                <div className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                  {player.isEliminated ? 'Geëlimineerd' : 'Stemmen'}
+                </div>
               </div>
             </button>
           ))}

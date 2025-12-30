@@ -11,6 +11,8 @@ import VotingPhase from "./components/VotingPhase";
 import EndGame from "./components/EndGame";
 import LeaderboardView from "./components/LeaderboardView";
 import { ModeToggle } from "./components/mode-toggle";
+import { FullscreenToggle } from "./components/FullscreenToggle";
+import { FullscreenPrompt } from "./components/FullscreenPrompt";
 
 export default function Home() {
   const [view, setView] = useState<"home" | "setup" | "card-phase" | "start-round" | "game-round" | "voting" | "end-game" | "leaderboard">("home");
@@ -205,7 +207,9 @@ export default function Home() {
 
   return (
     <main className="h-screen text-foreground overflow-hidden relative md:max-w-md md:mx-auto">
+      <FullscreenPrompt />
       <div className="fixed top-4 right-4 z-50 flex gap-2 items-center">
+        <FullscreenToggle />
         <ModeToggle />
         {view !== "home" && view !== "setup" && view !== "end-game" && view !== "leaderboard" && (
           <button 

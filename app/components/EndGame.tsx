@@ -1,0 +1,56 @@
+import { GameState } from "@/lib/gameLogic";
+
+interface EndGameProps {
+  gameState: GameState | null;
+  onRestart: () => void;
+  onHome: () => void;
+  playSound: (type: 'click' | 'win' | 'lose') => void;
+}
+
+export default function EndGame({ gameState, onRestart, onHome, playSound }: EndGameProps) {
+  if (!gameState) return null;
+
+  return (
+    <div className="flex flex-col min-h-screen p-6 bg-background items-center justify-center text-center animate-zoom-in">
+      <div className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-muted-foreground">Einde Spel</div>
+      <h2 className="text-5xl font-black mb-8 leading-tight">
+        {gameState.winner === "Burgers" ? "Burgers winnen!" : 
+         gameState.winner === "Undercovers" ? "Undercovers winnen!" : "Mister White wint!"}
+      </h2>
+
+      <div className="w-full space-y-2 mb-12 max-h-[40vh] overflow-y-auto pr-2">
+        <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-4 mb-2">
+          <span>Speler</span>
+          <span>Rol & Woord</span>
+        </div>
+        {gameState.players.map(player => (
+          <div key={player.id} className={`flex justify-between items-center p-4 rounded-2xl transition-all hover:scale-[1.01] ${player.isEliminated ? 'bg-secondary opacity-60' : 'bg-secondary hover:bg-secondary/80'}`}>
+            <div className="font-bold flex items-center gap-2">
+              {player.isEliminated && <span className="text-xs">💀</span>}
+              {player.name}
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-black">{player.role}</div>
+              {player.word && <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{player.word}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-4 w-full max-w-xs">
+        <button 
+          onClick={() => { playSound('click'); onRestart(); }}
+          className="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02]"
+        >
+          Opnieuw spelen
+        </button>
+        <button 
+          onClick={() => { playSound('click'); onHome(); }}
+          className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
+        >
+          Terug naar start
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,153 +1,348 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { GameState, getInitialRoles, setupGame } from "@/lib/gameLogic";
+import { updateLeaderboard } from "@/lib/leaderboard";
+import HomeView from "./components/HomeView";
+import SetupView from "./components/SetupView";
+import CardPhase from "./components/CardPhase";
+import GameRound from "./components/GameRound";
+import VotingPhase from "./components/VotingPhase";
+import EndGame from "./components/EndGame";
+import LeaderboardView from "./components/LeaderboardView";
+import { ModeToggle } from "./components/mode-toggle";
+
 export default function Home() {
+  const [view, setView] = useState<"home" | "setup" | "card-phase" | "start-round" | "game-round" | "voting" | "end-game" | "leaderboard">("home");
+  const [playerCount, setPlayerCount] = useState(3);
+  const [roles, setRoles] = useState({ burgers: 2, undercovers: 1, misterWhites: 0 });
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [isCardOpen, setIsCardOpen] = useState(false);
+  const [playerNameInput, setPlayerNameInput] = useState("");
+  const [misterWhiteGuess, setMisterWhiteGuess] = useState("");
+  const [showMisterWhiteGuess, setShowMisterWhiteGuess] = useState(false);
+  const [savedNames, setSavedNames] = useState<string[]>([]);
+  const [settings, setSettings] = useState({
+    soundEffects: true,
+    misterWhiteStarts: false
+  });
+  const [showGuessResult, setShowGuessResult] = useState<{ correct: boolean; word: string } | null>(null);
+  const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+
+  const playSound = (type: 'click' | 'win' | 'lose') => {
+    if (!settings.soundEffects) return;
+
+    let file = '/sounds/click.wav';
+    if (type === 'win') {
+      const wins = ['win1.wav', 'win2.wav', 'win3.wav'];
+      file = `/sounds/${wins[Math.floor(Math.random() * wins.length)]}`;
+    } else if (type === 'lose') {
+      file = '/sounds/lose1.wav';
+    }
+
+    const audio = new Audio(file);
+    audio.play().catch(e => console.error("Audio play failed", e));
+  };
+
+  // Update roles when playerCount changes
+  useEffect(() => {
+    setRoles(getInitialRoles(playerCount));
+  }, [playerCount]);
+
+  const handleShowLeaderboard = () => {
+    playSound('click');
+    setView("leaderboard");
+  };
+
+  const handleStartSetup = () => {
+    playSound('click');
+    setView("setup");
+  };
+  
+  const handleStartGame = () => {
+    playSound('click');
+    // Use saved names if available, otherwise default
+    const state = setupGame(playerCount, roles, savedNames);
+    setGameState(state);
+    setView("card-phase");
+    setCurrentPlayerIndex(0);
+    setIsCardOpen(false);
+    setShowGuessResult(null);
+    setMisterWhiteGuess("");
+    
+    // Pre-fill input with saved name if available, otherwise default
+    const nextName = savedNames[0] || `Speler 1`;
+    setPlayerNameInput(nextName);
+  };
+
+  const handleNextPlayer = () => {
+    if (!gameState) return;
+    
+    const updatedPlayers = [...gameState.players];
+    const newName = playerNameInput || `Speler ${currentPlayerIndex + 1}`;
+    updatedPlayers[currentPlayerIndex].name = newName;
+    updatedPlayers[currentPlayerIndex].hasSeenCard = true;
+    
+    // Save name for future games
+    const newSavedNames = [...savedNames];
+    newSavedNames[currentPlayerIndex] = newName;
+    setSavedNames(newSavedNames);
+    
+    setGameState({ ...gameState, players: updatedPlayers });
+
+    if (currentPlayerIndex < gameState.players.length - 1) {
+      const nextIndex = currentPlayerIndex + 1;
+      setCurrentPlayerIndex(nextIndex);
+      setIsCardOpen(false);
+      // Pre-fill next name
+      setPlayerNameInput(savedNames[nextIndex] || `Speler ${nextIndex + 1}`);
+    } else {
+      setView("game-round");
+    }
+  };
+
+  const handleEliminate = (playerId: number) => {
+    if (!gameState) return;
+    
+    const player = gameState.players.find(p => p.id === playerId);
+    if (!player) return;
+
+    const updatedPlayers = gameState.players.map(p => 
+      p.id === playerId ? { ...p, isEliminated: true } : p
+    );
+
+    const newState = { ...gameState, players: updatedPlayers };
+    setGameState(newState);
+
+    if (player.role === "Mister White") {
+      setShowMisterWhiteGuess(true);
+    } else {
+      checkWinCondition(newState);
+    }
+  };
+
+  const handleMisterWhiteGuess = () => {
+    if (!gameState) return;
+    
+    const isCorrect = misterWhiteGuess.toLowerCase().trim() === gameState.wordPair.burger.toLowerCase().trim();
+    
+    if (isCorrect) {
+      playSound('win');
+      const finalState = { ...gameState, winner: "Mister White" } as GameState;
+      updateLeaderboard(finalState);
+      setGameState(finalState);
+      setView("end-game");
+    } else {
+      playSound('lose');
+      setShowGuessResult({ correct: false, word: misterWhiteGuess });
+      setShowMisterWhiteGuess(false);
+    }
+  };
+
+  const handleCloseGuessResult = () => {
+    playSound('click');
+    setShowGuessResult(null);
+    if (gameState) checkWinCondition(gameState);
+  };
+
+  const checkWinCondition = (state: GameState) => {
+    const activePlayers = state.players.filter(p => !p.isEliminated);
+    const undercovers = activePlayers.filter(p => p.role === "Undercover").length;
+    const burgers = activePlayers.filter(p => p.role === "Burger").length;
+    const misterWhites = activePlayers.filter(p => p.role === "Mister White").length;
+
+    // Burgers win if all indringers are gone
+    if (undercovers === 0 && misterWhites === 0) {
+      playSound('win');
+      const finalState = { ...state, winner: "Burgers" } as GameState;
+      updateLeaderboard(finalState);
+      setGameState(finalState);
+      setView("end-game");
+      return;
+    } 
+
+    // Mister White wins if he survives until only 2 players are left
+    if (activePlayers.length <= 2 && misterWhites > 0) {
+      playSound('win');
+      const finalState = { ...state, winner: "Mister White" } as GameState;
+      updateLeaderboard(finalState);
+      setGameState(finalState);
+      setView("end-game");
+      return;
+    }
+    
+    // Undercovers win if all civilians are eliminated and Undercover is still alive
+    if (burgers === 0 && undercovers > 0) {
+      playSound('win');
+      const finalState = { ...state, winner: "Undercovers" } as GameState;
+      updateLeaderboard(finalState);
+      setGameState(finalState);
+      setView("end-game");
+      return;
+    }
+
+    // If no one won yet, continue to next round
+    setView("game-round");
+  };
+
+  const handleQuitGame = () => {
+    playSound('click');
+    setShowQuitConfirm(true);
+  };
+
+  const confirmQuit = () => {
+    playSound('click');
+    setView("home");
+    setGameState(null);
+    setShowQuitConfirm(false);
+  };
+
+  const cancelQuit = () => {
+    playSound('click');
+    setShowQuitConfirm(false);
+  };
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 selection:bg-gray-100">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="#" className="font-bold text-xl tracking-tighter">Meneer Wit</a>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-            <a href="#hoe-werkt-het" className="hover:text-black transition-colors">Hoe werkt het?</a>
-            <a href="#het-idee" className="hover:text-black transition-colors">Het Idee</a>
-            <a href="#waarom" className="hover:text-black transition-colors">Waarom?</a>
-            <a href="#download" className="px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-all">Download</a>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="px-6 pt-20 pb-16 md:pt-32 md:pb-24 max-w-5xl mx-auto text-center animate-float-in">
-        <div className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest uppercase bg-black text-white rounded-full">
-          100% Gratis
-        </div>
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6">
-          Meneer Wit
-        </h1>
-        <p className="text-xl md:text-2xl font-medium text-gray-600 mb-4">
-          De Nederlandse &quot;Mister White&quot;
-        </p>
-        <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Eindelijk een volledig Nederlandse versie van de populaire partygame. 
-          Ontmasker de indringers, bluf je eruit als Meneer Wit en win het spel. 
-          <strong> Geen kosten, geen accounts, gewoon spelen.</strong>
-        </p>
-        
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a 
-            href="#" 
-            className="w-full sm:w-auto px-8 py-4 bg-black text-white rounded-2xl font-semibold text-lg hover:bg-gray-800 transition-all active:scale-95"
+    <main className="h-screen text-foreground overflow-hidden relative md:max-w-md md:mx-auto">
+      <div className="fixed top-4 right-4 z-50 flex gap-2 items-center">
+        <ModeToggle />
+        {view !== "home" && view !== "setup" && view !== "end-game" && view !== "leaderboard" && (
+          <button 
+            onClick={handleQuitGame}
+            className="w-10 h-10 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold hover:bg-destructive/20 hover:text-destructive transition-colors shadow-md"
+            title="Stop Spel"
           >
-            Download voor iOS
-          </a>
-          <a 
-            href="#" 
-            className="w-full sm:w-auto px-8 py-4 border-2 border-black text-black rounded-2xl font-semibold text-lg hover:bg-gray-50 transition-all active:scale-95"
-          >
-            Download voor Android
-          </a>
-        </div>
-      </section>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+            </svg>
+          </button>
+        )}
+      </div>
 
-      {/* Hoe werkt het? */}
-      <section id="hoe-werkt-het" className="px-6 py-20 bg-gray-200 scroll-mt-16">
-        <div className="max-w-5xl mx-auto animate-float-in">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Hoe werkt het?</h2>
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">1</div>
-              <h3 className="text-xl font-bold mb-3">Start een spel</h3>
-              <p className="text-gray-600">Pak je telefoon en start een nieuw spel met je vrienden in de kamer.</p>
+      {view === "home" && (
+        <HomeView 
+          onStartSetup={handleStartSetup} 
+          settings={settings}
+          onSettingsChange={setSettings}
+          playSound={playSound}
+          onShowLeaderboard={handleShowLeaderboard}
+        />
+      )}
+      
+      {view === "leaderboard" && (
+        <LeaderboardView 
+          onBack={() => { playSound('click'); setView("home"); }}
+          playSound={playSound}
+        />
+      )}
+      
+      {view === "setup" && (
+        <SetupView 
+          playerCount={playerCount}
+          setPlayerCount={setPlayerCount}
+          roles={roles}
+          setRoles={setRoles}
+          onStartGame={handleStartGame}
+          onBack={() => { playSound('click'); setView("home"); }}
+          playSound={playSound}
+        />
+      )}
+      
+      {view === "card-phase" && (
+        <CardPhase 
+          gameState={gameState}
+          currentPlayerIndex={currentPlayerIndex}
+          isCardOpen={isCardOpen}
+          setIsCardOpen={setIsCardOpen}
+          playerNameInput={playerNameInput}
+          setPlayerNameInput={setPlayerNameInput}
+          onNextPlayer={handleNextPlayer}
+          playSound={playSound}
+        />
+      )}
+      
+      {view === "game-round" && (
+        <GameRound 
+          gameState={gameState}
+          onStartVoting={() => { playSound('click'); setView("voting"); }}
+          playSound={playSound}
+        />
+      )}
+      
+      {view === "voting" && (
+        <VotingPhase 
+          gameState={gameState}
+          onEliminate={handleEliminate}
+          showMisterWhiteGuess={showMisterWhiteGuess}
+          misterWhiteGuess={misterWhiteGuess}
+          setMisterWhiteGuess={setMisterWhiteGuess}
+          onMisterWhiteGuess={handleMisterWhiteGuess}
+          onCheckWin={() => {
+            setShowMisterWhiteGuess(false);
+            if (gameState) checkWinCondition(gameState);
+          }}
+          playSound={playSound}
+        />
+      )}
+      
+      {view === "end-game" && (
+        <EndGame 
+          gameState={gameState}
+          onRestart={handleStartGame}
+          onHome={() => { playSound('click'); setView("home"); }}
+          playSound={playSound}
+        />
+      )}
+
+      {/* Quit Confirmation Modal */}
+      {showQuitConfirm && (
+        <div className="fixed inset-0 bg-background/90 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-fade-in">
+          <div className="bg-card text-card-foreground rounded-[2.5rem] p-8 max-w-md w-full text-center shadow-2xl border border-border">
+            <h3 className="text-2xl font-bold mb-4">Spel Stoppen?</h3>
+            <p className="text-muted-foreground mb-8">
+              Weet je zeker dat je het huidige spel wilt beëindigen? Alle voortgang gaat verloren.
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={confirmQuit}
+                className="w-full py-4 bg-destructive text-destructive-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+              >
+                Ja, stop spel
+              </button>
+              <button 
+                onClick={cancelQuit}
+                className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all"
+              >
+                Nee, ga door
+              </button>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">2</div>
-              <h3 className="text-xl font-bold mb-3">Ontvang je rol</h3>
-              <p className="text-gray-600">Krijg in het geheim je rol: ben jij een Burger, de Afwijker of Meneer Wit?</p>
+          </div>
+        </div>
+      )}
+
+      {/* Guess Result Modal */}
+      {showGuessResult && (
+        <div className="fixed inset-0 bg-background/90 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-fade-in">
+          <div className="bg-card text-card-foreground rounded-[2.5rem] p-8 max-w-md w-full text-center shadow-2xl border border-border">
+            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-4xl">❌</span>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">3</div>
-              <h3 className="text-xl font-bold mb-3">Ontmasker & win</h3>
-              <p className="text-gray-600">Stel vragen, geef hints en probeer de anderen te ontmaskeren voor ze jou vinden.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Het Idee */}
-      <section id="het-idee" className="px-6 py-20 max-w-4xl mx-auto text-center border-b border-gray-100 scroll-mt-16 animate-float-in">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8">Het Idee</h2>
-        <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
-          <p>
-            Net als in <strong>Undercover</strong> of <strong>Mister White</strong> draait alles om subtiele hints en scherpe observaties. 
-            In deze Nederlandse versie krijgt iedereen een geheim woord, behalve Meneer Wit zelf. 
-            De Afwijker krijgt een woord dat er erg op lijkt, wat voor extra verwarring zorgt.
-          </p>
-          <p>
-            Om de beurt geeft iedereen één woord als hint dat te maken heeft met hun geheime woord. 
-            Meneer Wit moet proberen niet op te vallen en het woord van de Burgers te raden door goed te luisteren naar de hints.
-          </p>
-          <p>
-            Na elke ronde stemmen de spelers wie zij denken dat Meneer Wit is. 
-            Kunnen de Burgers de indringer ontmaskeren, of weet Meneer Wit iedereen te slim af te zijn?
-          </p>
-        </div>
-      </section>
-
-      {/* Waarom Meneer Wit? */}
-      <section id="waarom" className="px-6 py-20 max-w-5xl mx-auto scroll-mt-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center animate-float-in">Waarom Meneer Wit?</h2>
-        <div className="grid sm:grid-cols-2 gap-8">
-          <div className="p-8 border-2 border-black rounded-3xl bg-black text-white animate-float-in">
-            <h3 className="text-xl font-bold mb-2">100% Gratis</h3>
-            <p className="text-gray-300">Geen in-app aankopen, geen advertenties die je spel onderbreken. Gewoon echt gratis.</p>
-          </div>
-          <div className="p-8 border border-gray-100 rounded-3xl hover:border-gray-200 transition-colors animate-float-in">
-            <h3 className="text-xl font-bold mb-2">Geen accounts</h3>
-            <p className="text-gray-600">Geen gedoe met inloggen of e-mailadressen. Open de app en begin direct.</p>
-          </div>
-          <div className="p-8 border border-gray-100 rounded-3xl hover:border-gray-200 transition-colors animate-float-in">
-            <h3 className="text-xl font-bold mb-2">Volledig Nederlands</h3>
-            <p className="text-gray-600">Alle woorden en categorieën zijn zorgvuldig gekozen voor de Nederlandse taal.</p>
-          </div>
-          <div className="p-8 border border-gray-100 rounded-3xl hover:border-gray-200 transition-colors animate-float-in">
-            <h3 className="text-xl font-bold mb-2">Perfect voor groepen</h3>
-            <p className="text-gray-600">Ideaal voor feestjes, vakanties of gewoon een avondje op de bank.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section id="download" className="px-6 py-20 bg-black text-white text-center scroll-mt-16 animate-float-in">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Direct gratis spelen?</h2>
-          <p className="text-xl text-gray-400 mb-10">
-            Download Meneer Wit nu en begin direct. Geen verborgen kosten, geen accounts.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a 
-              href="#" 
-              className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-2xl font-semibold text-lg hover:bg-gray-100 transition-all active:scale-95"
+            <h3 className="text-2xl font-bold mb-2">Helaas!</h3>
+            <p className="text-muted-foreground mb-8">
+              Het woord was niet <span className="font-bold text-foreground">&quot;{showGuessResult.word}&quot;</span>.
+            </p>
+            
+            <button 
+              onClick={handleCloseGuessResult}
+              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
             >
-              Download voor iOS
-            </a>
-            <a 
-              href="#" 
-              className="w-full sm:w-auto px-8 py-4 border-2 border-white text-white rounded-2xl font-semibold text-lg hover:bg-white/10 transition-all active:scale-95"
-            >
-              Download voor Android
-            </a>
+              Doorgaan
+            </button>
           </div>
-          <p className="mt-6 text-sm text-gray-500 font-medium uppercase tracking-widest">
-            Altijd Gratis • Geen Accounts • Direct Plezier
-          </p>
         </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-12 border-t bg-black text-center">
-        <p className="font-bold text-lg mb-2 text-gray-400">Meneer Wit - Door: Alex Lamper</p>
-        <p className="text-gray-500 text-sm">
-          Niet-commercieel, gemaakt voor plezier. &copy; 2024 Meneer Wit. Alle rechten voorbehouden.
-        </p>
-      </footer>
-    </div>
+      )}
+    </main>
   );
 }

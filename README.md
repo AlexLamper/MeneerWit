@@ -2,6 +2,8 @@
 
 Een digitale versie van het populaire gezelschapsspel "Mr. White" (ook wel bekend als *Undercover*). Dit project is gebouwd als een snelle, mobiel-vriendelijke webapplicatie.
 
+Met meer dan **1000+ unieke woordenparen** is het spel praktisch onbeperkt speelbaar. De kans dat je hetzelfde woord snel opnieuw krijgt is minimaal!
+
 ##  Hoe werkt het spel?
 
 Het doel is simpel: ontmasker de **Mister White** voordat hij het geheime woord raadt.

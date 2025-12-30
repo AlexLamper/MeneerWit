@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { GameState, getInitialRoles, setupGame } from "@/lib/gameLogic";
+import { WORD_PAIRS } from "@/lib/gameData";
 import { updateLeaderboard } from "@/lib/leaderboard";
 import HomeView from "./components/HomeView";
 import SetupView from "./components/SetupView";
@@ -31,6 +32,7 @@ export default function Home() {
   });
   const [showGuessResult, setShowGuessResult] = useState<{ correct: boolean; word: string } | null>(null);
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+  const [requireCardConfirmation, setRequireCardConfirmation] = useState(false);
 
   const playSound = (type: 'click' | 'win' | 'lose') => {
     if (!settings.soundEffects) return;
@@ -72,6 +74,7 @@ export default function Home() {
     setIsCardOpen(false);
     setShowGuessResult(null);
     setMisterWhiteGuess("");
+    setRequireCardConfirmation(false);
     
     // Pre-fill input with saved name if available, otherwise default
     // const nextName = savedNames[0] || `Speler 1`;
@@ -148,6 +151,43 @@ export default function Home() {
     playSound('click');
     setShowGuessResult(null);
     if (gameState) checkWinCondition(gameState);
+  };
+
+  const handleNewWords = () => {
+    if (!gameState) return;
+    const newWordPair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
+    
+    const updatedPlayers = gameState.players.map(p => ({
+      ...p,
+      word: p.role === "Burger" ? newWordPair.burger : p.role === "Undercover" ? newWordPair.undercover : "",
+      hasSeenCard: false
+    }));
+
+    setGameState({ ...gameState, wordPair: newWordPair, players: updatedPlayers });
+    setCurrentPlayerIndex(0);
+    setView("card-phase");
+    setRequireCardConfirmation(true);
+    playSound('click');
+  };
+
+  const handleAddPlayer = () => {
+    if (!gameState) return;
+    
+    const newId = Math.max(...gameState.players.map(p => p.id)) + 1;
+    const newPlayer = {
+      id: newId,
+      name: `Speler ${newId + 1}`,
+      role: "Burger" as const,
+      word: gameState.wordPair.burger,
+      isEliminated: false,
+      hasSeenCard: false
+    };
+
+    setGameState({ 
+      ...gameState, 
+      players: [...gameState.players, newPlayer] 
+    });
+    playSound('click');
   };
 
   const checkWinCondition = (state: GameState) => {
@@ -265,6 +305,7 @@ export default function Home() {
           setPlayerNameInput={setPlayerNameInput}
           onNextPlayer={handleNextPlayer}
           playSound={playSound}
+          requireConfirmation={requireCardConfirmation}
         />
       )}
       
@@ -273,6 +314,10 @@ export default function Home() {
           gameState={gameState}
           onStartVoting={() => { playSound('click'); setView("voting"); }}
           playSound={playSound}
+          onNewWords={handleNewWords}
+          onAddPlayer={handleAddPlayer}
+          settings={settings}
+          onSettingsChange={setSettings}
         />
       )}
       

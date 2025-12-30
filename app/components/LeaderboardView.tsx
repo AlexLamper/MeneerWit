@@ -27,7 +27,7 @@ export default function LeaderboardView({ onBack, playSound }: LeaderboardViewPr
     <div className="flex flex-col h-screen p-6 bg-background animate-fade-in overflow-hidden">
       <div className="flex items-center gap-4 mb-8">
         <button 
-          onClick={() => { playSound('click'); onBack(); }}
+          onClick={() => { onBack(); }}
           className="w-10 h-10 flex items-center justify-center bg-secondary rounded-full hover:bg-secondary/80 transition-colors font-bold"
         >
           ←

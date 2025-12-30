@@ -51,7 +51,7 @@ export default function HomeView({ onStartSetup, onShowLeaderboard, settings, on
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground">Uitleg</span>
         </button>
 
-        <button onClick={() => { playSound('click'); onShowLeaderboard(); }} className="flex flex-col items-center gap-1 group transition-transform hover:scale-110">
+        <button onClick={() => { onShowLeaderboard(); }} className="flex flex-col items-center gap-1 group transition-transform hover:scale-110">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
             <span className="text-lg">🏆</span>
           </div>

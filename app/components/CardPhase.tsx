@@ -11,6 +11,7 @@ interface CardPhaseProps {
   setPlayerNameInput: (name: string) => void;
   onNextPlayer: () => void;
   playSound: (type: 'click' | 'win' | 'lose') => void;
+  requireConfirmation?: boolean;
 }
 
 export default function CardPhase({ 
@@ -21,9 +22,11 @@ export default function CardPhase({
   playerNameInput, 
   setPlayerNameInput, 
   onNextPlayer,
-  playSound
+  playSound,
+  requireConfirmation = false
 }: CardPhaseProps) {
   const [knownPlayers, setKnownPlayers] = useState<string[]>([]);
+  const [showWord, setShowWord] = useState(false);
 
   useEffect(() => {
     const handle = requestAnimationFrame(() => {
@@ -31,6 +34,11 @@ export default function CardPhase({
     });
     return () => cancelAnimationFrame(handle);
   }, []);
+
+  // Reset showWord when moving to next player
+  useEffect(() => {
+    setTimeout(() => setShowWord(false), 0);
+  }, [currentPlayerIndex]);
 
   if (!gameState) return null;
   const currentPlayer = gameState.players[currentPlayerIndex];
@@ -60,6 +68,11 @@ export default function CardPhase({
     }
 
     setIsCardOpen(true);
+  };
+
+  const handleConfirmReveal = () => {
+    playSound('click');
+    setShowWord(true);
   };
 
   return (
@@ -113,31 +126,48 @@ export default function CardPhase({
         </div>
       ) : (
         <div className="w-full max-w-xs animate-zoom-in">
-          <div className="bg-card text-card-foreground border border-border p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] mb-6 sm:mb-8 shadow-2xl aspect-[3/4] flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
-            
-            <div className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Rol</div>
-            <div className="text-2xl sm:text-3xl font-black mb-6 sm:mb-8">
-              {currentPlayer.role === "Burger" ? "Burger" : 
-               currentPlayer.role === "Undercover" ? "Undercover" : "Mister White"}
-            </div>
-            
-            <div className="w-full h-px bg-border mb-6 sm:mb-8" />
-            
-            <div className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Woord</div>
-            <div className="text-3xl sm:text-4xl font-black break-all">
-              {currentPlayer.role === "Mister White" ? "???" : currentPlayer.word}
-            </div>
-            {currentPlayer.role === "Mister White" && (
-              <p className="mt-4 text-[10px] sm:text-xs opacity-50">Je hebt geen woord. Luister goed naar de hints van anderen!</p>
-            )}
-          </div>
+          {requireConfirmation && !showWord ? (
+            <>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-2">{playerNameInput || `Speler ${currentPlayerIndex + 1}`}</h2>
+                <p className="text-muted-foreground">Klik hieronder om je geheime rol en woord te zien.</p>
+              </div>
+              <button 
+                onClick={handleConfirmReveal}
+                className="w-full py-6 bg-primary text-primary-foreground rounded-3xl font-bold text-2xl active:scale-95 transition-all shadow-xl animate-pulse"
+              >
+                Toon Mijn Rol
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="bg-card text-card-foreground border border-border p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] mb-6 sm:mb-8 shadow-2xl aspect-[3/4] flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+                
+                <div className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Rol</div>
+                <div className="text-2xl sm:text-3xl font-black mb-6 sm:mb-8">
+                  {currentPlayer.role === "Burger" ? "Burger" : 
+                   currentPlayer.role === "Undercover" ? "Undercover" : "Mister White"}
+                </div>
+                
+                <div className="w-full h-px bg-border mb-6 sm:mb-8" />
+                
+                <div className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Woord</div>
+                <div className="text-3xl sm:text-4xl font-black break-all">
+                  {currentPlayer.role === "Mister White" ? "???" : currentPlayer.word}
+                </div>
+                {currentPlayer.role === "Mister White" && (
+                  <p className="mt-4 text-[10px] sm:text-xs opacity-50">Je hebt geen woord. Luister goed naar de hints van anderen!</p>
+                )}
+              </div>
 
-          <button 
-            onClick={() => { playSound('click'); onNextPlayer(); }}
-            className="w-full py-3 sm:py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg sm:text-xl active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
-          >
-            Verberg & geef door
-          </button>
+              <button 
+                onClick={() => { playSound('click'); onNextPlayer(); }}
+                className="w-full py-3 sm:py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg sm:text-xl active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
+              >
+                Verberg & geef door
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

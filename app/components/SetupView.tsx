@@ -36,9 +36,10 @@ export default function SetupView({ playerCount, setPlayerCount, roles, setRoles
             type="range" 
             min="3" 
             max="20" 
+            step="1"
             value={playerCount} 
             onChange={(e) => setPlayerCount(parseInt(e.target.value))}
-            className="w-full h-4 sm:h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-black dark:accent-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="w-full h-4 bg-secondary rounded-full appearance-none cursor-pointer accent-primary hover:bg-secondary/80 transition-colors"
           />
         </div>
 

@@ -5,8 +5,8 @@ interface RulesModalProps {
 
 export default function RulesModal({ onClose, playSound }: RulesModalProps) {
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-card text-card-foreground rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-border flex flex-col">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in pt-24 sm:pt-4">
+      <div className="bg-card text-card-foreground rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 max-w-md w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-border flex flex-col">
         <div className="flex justify-between items-center mb-4 sm:mb-6 shrink-0">
           <h2 className="text-2xl sm:text-3xl font-black">Spelregels</h2>
           <button onClick={() => { playSound('click'); onClose(); }} className="w-8 h-8 flex items-center justify-center bg-secondary rounded-full hover:bg-secondary/80 transition-colors">✕</button>

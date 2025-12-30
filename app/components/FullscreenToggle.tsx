@@ -3,32 +3,62 @@
 import { useState, useEffect } from "react";
 import { Maximize, Minimize } from "lucide-react";
 
+interface DocumentWithFullscreen extends Document {
+  webkitFullscreenEnabled?: boolean;
+  webkitFullscreenElement?: Element;
+  webkitExitFullscreen?: () => Promise<void>;
+}
+
+interface HTMLElementWithFullscreen extends HTMLElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+}
+
 export function FullscreenToggle() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
     const rafId = requestAnimationFrame(() => {
-      setIsSupported(document.fullscreenEnabled);
+      // Check for standard or webkit prefixed support
+      const doc = document as DocumentWithFullscreen;
+      const enabled = doc.fullscreenEnabled || doc.webkitFullscreenEnabled;
+      setIsSupported(!!enabled);
     });
 
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      // Check for standard or webkit prefixed fullscreen element
+      const doc = document as DocumentWithFullscreen;
+      const isFull = !!doc.fullscreenElement || !!doc.webkitFullscreenElement;
+      setIsFullscreen(isFull);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       cancelAnimationFrame(rafId);
     };
   }, []);
 
   const toggleFullscreen = async () => {
     try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
+      const doc = document as DocumentWithFullscreen;
+      const docEl = document.documentElement as HTMLElementWithFullscreen;
+
+      if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+        if (docEl.requestFullscreen) {
+          await docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) {
+          await docEl.webkitRequestFullscreen();
+        }
       } else {
-        await document.exitFullscreen();
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen();
+        }
       }
     } catch (err) {
       console.error("Error toggling fullscreen:", err);

@@ -3,15 +3,26 @@
 import { useState, useEffect } from "react";
 import { Maximize } from "lucide-react";
 
+interface DocumentWithFullscreen extends Document {
+  webkitFullscreenEnabled?: boolean;
+  webkitFullscreenElement?: Element;
+}
+
+interface HTMLElementWithFullscreen extends HTMLElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+}
+
 export function FullscreenPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
     // Check if user has already visited or dismissed
     const hasVisited = localStorage.getItem("meneerwit_visited");
-    const isFullscreen = !!document.fullscreenElement;
+    const doc = document as DocumentWithFullscreen;
+    const isFullscreen = !!doc.fullscreenElement || !!doc.webkitFullscreenElement;
+    const isSupported = doc.fullscreenEnabled || doc.webkitFullscreenEnabled;
     
-    if (!hasVisited && !isFullscreen && document.fullscreenEnabled) {
+    if (!hasVisited && !isFullscreen && isSupported) {
       const rafId = requestAnimationFrame(() => {
         setShowPrompt(true);
       });
@@ -21,7 +32,12 @@ export function FullscreenPrompt() {
 
   const handleEnableFullscreen = async () => {
     try {
-      await document.documentElement.requestFullscreen();
+      const docEl = document.documentElement as HTMLElementWithFullscreen;
+      if (docEl.requestFullscreen) {
+        await docEl.requestFullscreen();
+      } else if (docEl.webkitRequestFullscreen) {
+        await docEl.webkitRequestFullscreen();
+      }
       setShowPrompt(false);
       localStorage.setItem("meneerwit_visited", "true");
     } catch (err) {
@@ -37,8 +53,8 @@ export function FullscreenPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6 animate-fade-in">
-      <div className="bg-card text-card-foreground rounded-[2rem] p-8 max-w-sm w-full text-center shadow-2xl border border-border">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-100 flex items-center justify-center p-6 animate-fade-in">
+      <div className="bg-card text-card-foreground rounded-4xl p-8 max-w-sm w-full text-center shadow-2xl border border-border">
         <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 text-primary-foreground">
           <Maximize className="w-8 h-8" />
         </div>

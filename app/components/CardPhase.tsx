@@ -63,26 +63,26 @@ export default function CardPhase({
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-6 bg-background items-center justify-center text-center">
+    <div className="flex flex-col min-h-screen p-4 sm:p-6 bg-background items-center justify-center text-center">
       {!isCardOpen ? (
         <div className="w-full max-w-xs animate-fade-in">
-          <h2 className="text-2xl font-bold mb-2">Geef de telefoon aan</h2>
-          <div className="text-4xl font-black mb-8">Speler {currentPlayerIndex + 1}</div>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">Geef de telefoon aan</h2>
+          <div className="text-3xl sm:text-4xl font-black mb-6 sm:mb-8">Speler {currentPlayerIndex + 1}</div>
           
-          <div className="mb-8 text-left">
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 ml-1">Voer je naam in</p>
+          <div className="mb-6 sm:mb-8 text-left">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 ml-1">Voer je naam in</p>
             <input 
               type="text" 
               value={playerNameInput}
               onChange={(e) => setPlayerNameInput(e.target.value)}
-              className="w-full p-4 bg-secondary rounded-2xl text-center font-bold text-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all hover:bg-secondary/80 border-2 border-border focus:border-primary"
+              className="w-full p-3 sm:p-4 bg-secondary rounded-2xl text-center font-bold text-lg sm:text-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all hover:bg-secondary/80 border-2 border-border focus:border-primary"
               placeholder="Je naam..."
             />
           </div>
 
           {availablePlayers.length > 0 && (
-            <div className="mb-8 text-left animate-fade-in">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 ml-1">
+            <div className="mb-6 sm:mb-8 text-left animate-fade-in">
+              <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 ml-1">
                 Of kies een bekende speler
               </p>
               <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
@@ -90,7 +90,7 @@ export default function CardPhase({
                   <button
                     key={name}
                     onClick={() => { playSound('click'); setPlayerNameInput(name); }}
-                    className={`px-3 py-2 rounded-xl text-sm font-bold transition-all border border-transparent ${
+                    className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-transparent ${
                       playerNameInput === name 
                         ? 'bg-primary text-primary-foreground shadow-md scale-105' 
                         : 'bg-secondary/50 hover:bg-secondary hover:border-primary/20'
@@ -105,35 +105,35 @@ export default function CardPhase({
 
           <button 
             onClick={handleViewCardClick}
-            className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02]"
+            className="w-full py-3 sm:py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg sm:text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02]"
           >
             Bekijk kaart
           </button>
         </div>
       ) : (
         <div className="w-full max-w-xs animate-zoom-in">
-          <div className="bg-card text-card-foreground border border-border p-8 sm:p-12 rounded-[2.5rem] sm:rounded-[3rem] mb-8 shadow-2xl aspect-[3/4] flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+          <div className="bg-card text-card-foreground border border-border p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] mb-6 sm:mb-8 shadow-2xl aspect-[3/4] flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
             
-            <div className="text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Rol</div>
-            <div className="text-3xl font-black mb-8">
+            <div className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Rol</div>
+            <div className="text-2xl sm:text-3xl font-black mb-6 sm:mb-8">
               {currentPlayer.role === "Burger" ? "Burger" : 
                currentPlayer.role === "Undercover" ? "Undercover" : "Mister White"}
             </div>
             
-            <div className="w-full h-px bg-border mb-8" />
+            <div className="w-full h-px bg-border mb-6 sm:mb-8" />
             
-            <div className="text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Woord</div>
-            <div className="text-4xl font-black break-all">
+            <div className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Woord</div>
+            <div className="text-3xl sm:text-4xl font-black break-all">
               {currentPlayer.role === "Mister White" ? "???" : currentPlayer.word}
             </div>
             {currentPlayer.role === "Mister White" && (
-              <p className="mt-4 text-xs opacity-50">Je hebt geen woord. Luister goed naar de hints van anderen!</p>
+              <p className="mt-4 text-[10px] sm:text-xs opacity-50">Je hebt geen woord. Luister goed naar de hints van anderen!</p>
             )}
           </div>
 
           <button 
             onClick={() => { playSound('click'); onNextPlayer(); }}
-            className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
+            className="w-full py-3 sm:py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg sm:text-xl active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
           >
             Verberg & geef door
           </button>

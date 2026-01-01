@@ -21,7 +21,7 @@ export default function LeaderboardView({ onBack, playSound }: LeaderboardViewPr
   };
 
   return (
-    <div className="flex flex-col h-screen p-6 bg-background animate-fade-in overflow-hidden">
+    <div className="flex flex-col h-full p-6 bg-background animate-fade-in overflow-hidden">
       <div className="flex items-center mb-8">
         <div className="flex items-center gap-4 min-w-0">
           <button 

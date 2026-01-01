@@ -37,7 +37,7 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
   if (!gameState) return null;
 
   return (
-    <div className="flex flex-col min-h-screen p-6 bg-background items-center justify-center text-center animate-zoom-in">
+    <div className="flex flex-col h-full p-6 bg-background items-center justify-center text-center animate-zoom-in">
       <div className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-muted-foreground">Einde Spel</div>
       <h2 className="text-5xl font-black mb-8 leading-tight">
         {gameState.winner === "Burgers" ? "Burgers winnen!" : 

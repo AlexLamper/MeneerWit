@@ -247,7 +247,7 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen text-foreground overflow-hidden relative md:max-w-md md:mx-auto">
+    <main className="h-[100dvh] text-foreground overflow-hidden relative md:max-w-md md:mx-auto">
       <FullscreenPrompt />
       <div className="fixed top-4 right-4 z-50 flex gap-2 items-center">
         <FullscreenToggle />

@@ -39,7 +39,7 @@ export default function SetupView({
   };
 
   return (
-    <div className="flex flex-col h-screen p-4 sm:p-6 bg-background overflow-hidden">
+    <div className="flex flex-col h-full p-4 sm:p-6 bg-background overflow-hidden">
       <div className="flex items-center mb-4 sm:mb-6 gap-4">
         <button 
           onClick={onBack} 

@@ -74,7 +74,7 @@ export default function CardPhase({
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-4 sm:p-6 bg-background items-center justify-center text-center">
+    <div className="flex flex-col h-full p-4 sm:p-6 bg-background items-center justify-center text-center">
       {!isCardOpen ? (
         <div className="w-full max-w-xs animate-fade-in">
           <h2 className="text-xl sm:text-2xl font-bold mb-2">Geef de telefoon aan</h2>

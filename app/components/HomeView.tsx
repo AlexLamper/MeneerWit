@@ -21,7 +21,7 @@ export default function HomeView({ onStartSetup, onShowLeaderboard, settings, on
   const [showExplanation, setShowExplanation] = useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center animate-fade-in">
+    <div className="flex flex-col items-center justify-center h-full p-6 text-center animate-fade-in">
       <div className="mb-8 sm:mb-12">
         <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary rounded-4xl mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-primary/20 rotate-3 hover:rotate-6 transition-transform duration-300">
           <span className="text-primary-foreground text-4xl sm:text-5xl font-black drop-shadow-lg">?</span>

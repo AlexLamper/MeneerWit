@@ -61,7 +61,7 @@ export default function VotingPhase({
               key={player.id}
               disabled={player.isEliminated}
               onClick={() => !player.isEliminated && handlePlayerClick(player)}
-              className={`p-2 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left min-h-[3.5rem] sm:min-h-0 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
+              className={`p-4 sm:p-6 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left min-h-[3.5rem] sm:min-h-0 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
             >
               <div className={`w-8 h-8 sm:w-12 sm:h-12 shrink-0 rounded-full flex items-center justify-center mr-2 sm:mr-3 text-sm sm:text-2xl transition-colors ${player.isEliminated ? 'bg-secondary' : 'bg-primary text-primary-foreground group-hover:scale-110'}`}>
                 {player.isEliminated ? <Skull className="w-5 h-5 sm:w-6 sm:h-6" /> : <Fingerprint className="w-5 h-5 sm:w-6 sm:h-6" />}

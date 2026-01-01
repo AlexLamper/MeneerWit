@@ -34,7 +34,6 @@ export default function Home() {
   });
   const [showGuessResult, setShowGuessResult] = useState<{ correct: boolean; word: string } | null>(null);
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
-  const [requireCardConfirmation, setRequireCardConfirmation] = useState(false);
 
   const playSound = (type: 'click' | 'win' | 'lose') => {
     if (!settings.soundEffects) return;
@@ -76,12 +75,9 @@ export default function Home() {
     setIsCardOpen(false);
     setShowGuessResult(null);
     setMisterWhiteGuess("");
-    setRequireCardConfirmation(false);
     
-    // Reset custom words after starting so they don't persist accidentally to next game
-    // setCustomWordPair({ burger: "", undercover: "" }); 
-    // Actually, maybe keep them if they want to play again with same words? 
-    // Let's keep them for now.
+    // Reset custom words after starting so they don't persist to the next game
+    setCustomWordPair({ burger: "", undercover: "" }); 
     
     setPlayerNameInput("");
   };
@@ -170,7 +166,6 @@ export default function Home() {
     setGameState({ ...gameState, wordPair: newWordPair, players: updatedPlayers });
     setCurrentPlayerIndex(0);
     setView("card-phase");
-    setRequireCardConfirmation(true);
     playSound('click');
   };
 
@@ -311,7 +306,6 @@ export default function Home() {
           setPlayerNameInput={setPlayerNameInput}
           onNextPlayer={handleNextPlayer}
           playSound={playSound}
-          requireConfirmation={requireCardConfirmation}
         />
       )}
       
@@ -347,7 +341,11 @@ export default function Home() {
         <EndGame 
           gameState={gameState}
           onRestart={handleStartGame}
-          onHome={() => { playSound('click'); setView("home"); }}
+          onHome={() => { 
+            playSound('click'); 
+            setView("home"); 
+            setCustomWordPair({ burger: "", undercover: "" });
+          }}
           playSound={playSound}
         />
       )}

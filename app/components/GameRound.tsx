@@ -83,7 +83,7 @@ export default function GameRound({
       <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">
         {viewMode 
           ? "Selecteer je eigen kaart om je woord te zien." 
-          : "Iedereen heeft zijn woord gezien. Begin met omschrijven!"}
+          : "Iedereen heeft zijn woord gezien. Beschrijf je geheime woord nu met een woord of zin!"}
       </p>
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">
@@ -93,7 +93,7 @@ export default function GameRound({
               key={player.id} 
               onClick={() => handleCardClick(player)}
               disabled={!viewMode || player.isEliminated}
-              className={`p-2 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left 
+              className={`p-4 sm:p-6 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left 
                 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50' : 'bg-card shadow-sm'}
                 ${viewMode && !player.isEliminated ? 'border-primary cursor-pointer hover:bg-secondary/30 ring-2 ring-primary/20' : 'border-border'}
               `}

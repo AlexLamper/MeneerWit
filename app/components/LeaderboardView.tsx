@@ -17,40 +17,21 @@ export default function LeaderboardView({ onBack, playSound }: LeaderboardViewPr
   }, []);
 
   const getRankIcon = (index: number) => {
-    if (index === 0) return "🥇";
-    if (index === 1) return "🥈";
-    if (index === 2) return "🥉";
     return `#${index + 1}`;
-  };
-
-  const handleReset = () => {
-    if (confirm("Weet je zeker dat je alle scores wilt wissen?")) {
-      localStorage.removeItem("meneerwit_leaderboard");
-      setLeaderboard([]);
-      playSound('click');
-    }
   };
 
   return (
     <div className="flex flex-col h-screen p-6 bg-background animate-fade-in overflow-hidden">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center mb-8">
+        <div className="flex items-center gap-4 min-w-0">
           <button 
             onClick={() => { onBack(); }}
-            className="w-10 h-10 flex items-center justify-center bg-secondary rounded-full hover:bg-secondary/80 transition-colors font-bold"
+            className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-secondary rounded-full hover:bg-secondary/80 transition-colors font-bold"
           >
-            ←
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="-ml-0.5"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <h2 className="text-3xl font-black">Ranglijst</h2>
+          <h2 className="text-3xl font-black truncate">Ranglijst</h2>
         </div>
-        {leaderboard.length > 0 && (
-          <button 
-            onClick={handleReset}
-            className="text-xs font-bold text-muted-foreground hover:text-destructive transition-colors"
-          >
-            Reset
-          </button>
-        )}
       </div>
 
       <div className="flex-1 overflow-y-auto pr-2 space-y-3">
@@ -64,39 +45,55 @@ export default function LeaderboardView({ onBack, playSound }: LeaderboardViewPr
           leaderboard.map((player, index) => (
             <div 
               key={player.name}
-              className={`flex flex-col p-4 rounded-2xl border-2 transition-all ${index < 3 ? 'bg-secondary/50 border-primary/10' : 'bg-card border-border'}`}
+              className={`relative overflow-hidden flex flex-col py-7 px-5 rounded-3xl border transition-all duration-300 hover:shadow-lg ${
+                index === 0 ? 'bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border-yellow-500/30' : 
+                index === 1 ? 'bg-gradient-to-br from-slate-300/10 to-slate-400/5 border-slate-400/30' :
+                index === 2 ? 'bg-gradient-to-br from-[#CD7F32]/10 to-[#CD7F32]/5 border-[#CD7F32]/30' :
+                'bg-card border-border hover:border-primary/30'
+              }`}
             >
-              <div className="flex items-center">
-                <div className="w-12 h-12 flex items-center justify-center text-2xl font-black mr-4">
-                  {getRankIcon(index)}
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold truncate text-lg">{player.name}</div>
-                  <div className="text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-1">
-                    <span>🏆 {player.wins} gewonnen</span>
-                    <span>🎮 {player.gamesPlayed} gespeeld</span>
+              {/* Rank Badge */}
+              <div className="absolute -top-2 -right-2 w-16 h-16 opacity-10 pointer-events-none">
+                <div className="text-6xl font-black italic">{index + 1}</div>
+              </div>
+
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${
+                    index === 0 ? 'bg-yellow-500 text-white' : 
+                    index === 1 ? 'bg-slate-400 text-white' :
+                    index === 2 ? 'bg-[#CD7F32] text-white' :
+                    'bg-secondary text-muted-foreground'
+                  }`}>
+                    {getRankIcon(index)}
+                  </div>
+                  
+                  <div className="min-w-0">
+                    <div className="font-black truncate text-xl tracking-tight">{player.name}</div>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                        <span className="w-1 h-1 rounded-full bg-primary/40" /> {player.gamesPlayed} games
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                        <span className="w-1 h-1 rounded-full bg-green-500/40" /> {player.wins} wins
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-right pl-4">
-                  <div className="text-2xl font-black text-primary">{player.score}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Punten</div>
+                <div className="text-right">
+                  <div className={`text-3xl font-black tracking-tighter ${index < 3 ? 'text-primary' : 'text-foreground'}`}>
+                    {player.score}
+                  </div>
+                  <div className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 -mt-1">Punten</div>
                 </div>
               </div>
 
-              {(player.wronglyEliminatedCount > 0 || player.misterWhiteGuessWins > 0) && (
-                <div className="mt-3 pt-3 border-t border-border/50 flex flex-wrap gap-2">
-                  {player.wronglyEliminatedCount > 0 && (
-                    <div className="px-2 py-1 bg-destructive/10 text-destructive text-[10px] font-bold rounded-lg flex items-center gap-1">
-                      🕵️‍♂️ {player.wronglyEliminatedCount}x Verdacht
-                    </div>
-                  )}
-                  {player.misterWhiteGuessWins > 0 && (
-                    <div className="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-lg flex items-center gap-1">
-                      🧠 {player.misterWhiteGuessWins}x Meesterbrein
-                    </div>
-                  )}
+              {player.misterWhiteGuessWins > 0 && (
+                <div className="mt-4 pt-4 border-t border-border/40 flex flex-wrap gap-2 relative z-10">
+                  <div className="px-3 py-1.5 bg-primary/5 border border-primary/10 text-primary text-[10px] font-black rounded-full flex items-center gap-1.5 uppercase tracking-wider">
+                    <span className="text-xs">🧠</span> {player.misterWhiteGuessWins}x Meesterbrein
+                  </div>
                 </div>
               )}
             </div>

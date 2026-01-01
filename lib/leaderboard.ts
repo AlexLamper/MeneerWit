@@ -11,7 +11,6 @@ export interface PlayerStats {
     undercover: number;
     misterWhite: number;
   };
-  wronglyEliminatedCount: number; // Times a Burger was eliminated
   misterWhiteGuessWins: number; // Times MW won by guessing
 }
 
@@ -28,7 +27,6 @@ export const getLeaderboard = (): PlayerStats[] => {
     // Migration for old stats
     return parsed.map((p: Partial<PlayerStats>) => ({
       ...p,
-      wronglyEliminatedCount: p.wronglyEliminatedCount || 0,
       misterWhiteGuessWins: p.misterWhiteGuessWins || 0
     } as PlayerStats)).sort((a: PlayerStats, b: PlayerStats) => b.score - a.score);
   } catch (e) {
@@ -59,7 +57,6 @@ export const updateLeaderboard = (gameState: GameState, mwGuessedCorrectly: bool
         wins: 0,
         lastPlayed: timestamp,
         roleStats: { burger: 0, undercover: 0, misterWhite: 0 },
-        wronglyEliminatedCount: 0,
         misterWhiteGuessWins: 0
       };
       leaderboard.push(stats);
@@ -73,11 +70,6 @@ export const updateLeaderboard = (gameState: GameState, mwGuessedCorrectly: bool
     if (player.role === "Burger") stats.roleStats.burger++;
     else if (player.role === "Undercover") stats.roleStats.undercover++;
     else if (player.role === "Mister White") stats.roleStats.misterWhite++;
-
-    // Track wrongly eliminated burgers
-    if (player.role === "Burger" && player.isEliminated) {
-      stats.wronglyEliminatedCount++;
-    }
 
     // Calculate Points
     let pointsEarned = 0;

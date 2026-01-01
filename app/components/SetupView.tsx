@@ -40,11 +40,15 @@ export default function SetupView({
 
   return (
     <div className="flex flex-col h-screen p-4 sm:p-6 bg-background overflow-hidden">
-      <button onClick={onBack} className="mb-2 sm:mb-4 text-muted-foreground font-bold text-left hover:text-foreground transition-colors flex items-center gap-2">
-        <span>←</span> Terug
-      </button>
-      
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Spelconfiguratie</h2>
+      <div className="flex items-center mb-4 sm:mb-6 gap-4">
+        <button 
+          onClick={onBack} 
+          className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-secondary rounded-full hover:bg-secondary/80 transition-colors font-bold"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="-ml-0.5"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <h2 className="text-xl sm:text-2xl font-bold">Spelconfiguratie</h2>
+      </div>
       
       <div className="flex-1 overflow-y-auto pr-2 space-y-6 sm:space-y-8">
         <div>

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meneer Wit - De Nederlandse Partygame",
+  title: "Meneer Wit - De Nederlandse Mister White",
   description: "De Nederlandse versie van het spel \"Mister White\" - maar dan gratis en met een onbeperkt aantal woorden.",
 };
 

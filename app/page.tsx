@@ -26,6 +26,8 @@ export default function Home() {
   const [misterWhiteGuess, setMisterWhiteGuess] = useState("");
   const [showMisterWhiteGuess, setShowMisterWhiteGuess] = useState(false);
   const [savedNames, setSavedNames] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("Algemeen");
+  const [customWordPair, setCustomWordPair] = useState({ burger: "", undercover: "" });
   const [settings, setSettings] = useState({
     soundEffects: true,
     misterWhiteStarts: false
@@ -67,7 +69,7 @@ export default function Home() {
   const handleStartGame = () => {
     playSound('click');
     // Use saved names if available, otherwise default
-    const state = setupGame(playerCount, roles, savedNames);
+    const state = setupGame(playerCount, roles, savedNames, selectedCategory, customWordPair);
     setGameState(state);
     setView("card-phase");
     setCurrentPlayerIndex(0);
@@ -76,9 +78,11 @@ export default function Home() {
     setMisterWhiteGuess("");
     setRequireCardConfirmation(false);
     
-    // Pre-fill input with saved name if available, otherwise default
-    // const nextName = savedNames[0] || `Speler 1`;
-    // Don't pre-fill name to encourage typing or selecting
+    // Reset custom words after starting so they don't persist accidentally to next game
+    // setCustomWordPair({ burger: "", undercover: "" }); 
+    // Actually, maybe keep them if they want to play again with same words? 
+    // Let's keep them for now.
+    
     setPlayerNameInput("");
   };
 
@@ -137,7 +141,7 @@ export default function Home() {
     if (isCorrect) {
       playSound('win');
       const finalState = { ...gameState, winner: "Mister White" } as GameState;
-      updateLeaderboard(finalState);
+      updateLeaderboard(finalState, true);
       setGameState(finalState);
       setView("end-game");
     } else {
@@ -200,7 +204,7 @@ export default function Home() {
     if (undercovers === 0 && misterWhites === 0) {
       playSound('win');
       const finalState = { ...state, winner: "Burgers" } as GameState;
-      updateLeaderboard(finalState);
+      updateLeaderboard(finalState, false);
       setGameState(finalState);
       setView("end-game");
       return;
@@ -210,7 +214,7 @@ export default function Home() {
     if (activePlayers.length <= 2 && misterWhites > 0) {
       playSound('win');
       const finalState = { ...state, winner: "Mister White" } as GameState;
-      updateLeaderboard(finalState);
+      updateLeaderboard(finalState, false);
       setGameState(finalState);
       setView("end-game");
       return;
@@ -220,7 +224,7 @@ export default function Home() {
     if (burgers === 0 && undercovers > 0) {
       playSound('win');
       const finalState = { ...state, winner: "Undercovers" } as GameState;
-      updateLeaderboard(finalState);
+      updateLeaderboard(finalState, false);
       setGameState(finalState);
       setView("end-game");
       return;
@@ -288,8 +292,10 @@ export default function Home() {
           playerCount={playerCount}
           setPlayerCount={setPlayerCount}
           roles={roles}
-          setRoles={setRoles}
-          onStartGame={handleStartGame}
+          setRoles={setRoles}          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          customWordPair={customWordPair}
+          setCustomWordPair={setCustomWordPair}          onStartGame={handleStartGame}
           onBack={() => { playSound('click'); setView("home"); }}
           playSound={playSound}
         />

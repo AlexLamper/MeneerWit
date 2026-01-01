@@ -11,6 +11,8 @@ export interface PlayerStats {
     undercover: number;
     misterWhite: number;
   };
+  wronglyEliminatedCount: number; // Times a Burger was eliminated
+  misterWhiteGuessWins: number; // Times MW won by guessing
 }
 
 const STORAGE_KEY = "meneerwit_leaderboard";
@@ -22,7 +24,13 @@ export const getLeaderboard = (): PlayerStats[] => {
   if (!data) return [];
   
   try {
-    return JSON.parse(data).sort((a: PlayerStats, b: PlayerStats) => b.score - a.score);
+    const parsed = JSON.parse(data) as Partial<PlayerStats>[];
+    // Migration for old stats
+    return parsed.map((p: Partial<PlayerStats>) => ({
+      ...p,
+      wronglyEliminatedCount: p.wronglyEliminatedCount || 0,
+      misterWhiteGuessWins: p.misterWhiteGuessWins || 0
+    } as PlayerStats)).sort((a: PlayerStats, b: PlayerStats) => b.score - a.score);
   } catch (e) {
     console.error("Failed to parse leaderboard", e);
     return [];
@@ -33,7 +41,7 @@ export const getPlayerNames = (): string[] => {
   return getLeaderboard().map(p => p.name);
 };
 
-export const updateLeaderboard = (gameState: GameState) => {
+export const updateLeaderboard = (gameState: GameState, mwGuessedCorrectly: boolean = false) => {
   if (!gameState.winner) return;
 
   const leaderboard = getLeaderboard();
@@ -50,7 +58,9 @@ export const updateLeaderboard = (gameState: GameState) => {
         gamesPlayed: 0,
         wins: 0,
         lastPlayed: timestamp,
-        roleStats: { burger: 0, undercover: 0, misterWhite: 0 }
+        roleStats: { burger: 0, undercover: 0, misterWhite: 0 },
+        wronglyEliminatedCount: 0,
+        misterWhiteGuessWins: 0
       };
       leaderboard.push(stats);
     }
@@ -64,6 +74,11 @@ export const updateLeaderboard = (gameState: GameState) => {
     else if (player.role === "Undercover") stats.roleStats.undercover++;
     else if (player.role === "Mister White") stats.roleStats.misterWhite++;
 
+    // Track wrongly eliminated burgers
+    if (player.role === "Burger" && player.isEliminated) {
+      stats.wronglyEliminatedCount++;
+    }
+
     // Calculate Points
     let pointsEarned = 0;
     let isWinner = false;
@@ -72,21 +87,10 @@ export const updateLeaderboard = (gameState: GameState) => {
     if (player.role === "Mister White") {
       if (gameState.winner === "Mister White") {
         isWinner = true;
-        // Check if it was a guess win or survival win
-        // We can infer this: if the game ended and MW is not eliminated, it's likely survival
-        // But wait, if MW guesses correctly, he is also not eliminated usually.
-        // However, usually MW guesses after being eliminated.
-        // Actually, in our logic:
-        // 1. MW guesses correctly -> Winner = Mister White
-        // 2. MW survives -> Winner = Mister White
-        
-        // If MW was eliminated but won, it MUST be a correct guess (+100)
-        if (player.isEliminated) {
+        if (mwGuessedCorrectly) {
            pointsEarned += 100;
+           stats.misterWhiteGuessWins++;
         } else {
-           // If MW was NOT eliminated and won, it's a survival win (+80)
-           // OR it was a correct guess before elimination (rare but possible if we add that feature later)
-           // For now, let's assume non-eliminated MW win is survival.
            pointsEarned += 80;
         }
       }

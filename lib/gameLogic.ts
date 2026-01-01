@@ -1,4 +1,4 @@
-import { WORD_PAIRS, WordPair } from "./gameData";
+import { CATEGORIES, WORD_PAIRS, WordPair } from "./gameData";
 
 export type Role = "Burger" | "Undercover" | "Mister White";
 
@@ -47,9 +47,18 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 export const setupGame = (
   playerCount: number, 
   roles: { burgers: number, undercovers: number, misterWhites: number },
-  existingNames?: string[]
+  existingNames?: string[],
+  category: string = "Algemeen",
+  customWordPair?: WordPair
 ): GameState => {
-  const wordPair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
+  let wordPair: WordPair;
+  
+  if (customWordPair && customWordPair.burger && customWordPair.undercover) {
+    wordPair = customWordPair;
+  } else {
+    const pool = CATEGORIES[category] || WORD_PAIRS;
+    wordPair = pool[Math.floor(Math.random() * pool.length)];
+  }
   
   const roleList: Role[] = [
     ...Array(roles.burgers).fill("Burger"),

@@ -1,4 +1,6 @@
 import { GameState } from "@/lib/gameLogic";
+import { useEffect } from "react";
+import confetti from "canvas-confetti";
 
 interface EndGameProps {
   gameState: GameState | null;
@@ -8,6 +10,30 @@ interface EndGameProps {
 }
 
 export default function EndGame({ gameState, onRestart, onHome, playSound }: EndGameProps) {
+  useEffect(() => {
+    if (gameState?.winner) {
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      const interval: NodeJS.Timeout = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      }, 250);
+
+      return () => clearInterval(interval);
+    }
+  }, [gameState?.winner]);
+
   if (!gameState) return null;
 
   return (
@@ -39,13 +65,13 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <button 
-          onClick={() => { playSound('click'); onRestart(); }}
+          onClick={onRestart}
           className="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02]"
         >
           Opnieuw spelen
         </button>
         <button 
-          onClick={() => { playSound('click'); onHome(); }}
+          onClick={onHome}
           className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
         >
           Terug naar start

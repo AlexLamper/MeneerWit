@@ -2,6 +2,7 @@ import { useState } from "react";
 import RulesModal from "./RulesModal";
 import SettingsModal from "./SettingsModal";
 import ExplanationModal from "./ExplanationModal";
+import { Play, BookOpen, HelpCircle, Trophy, Settings as SettingsIcon } from "lucide-react";
 
 interface HomeViewProps {
   onStartSetup: () => void;
@@ -22,45 +23,46 @@ export default function HomeView({ onStartSetup, onShowLeaderboard, settings, on
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center animate-fade-in">
       <div className="mb-8 sm:mb-12">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary rounded-4xl mx-auto mb-6 flex items-center justify-center shadow-2xl rotate-3 hover:rotate-6 transition-transform duration-300">
-          <span className="text-primary-foreground text-4xl sm:text-5xl font-black">?</span>
+        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary rounded-4xl mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-primary/20 rotate-3 hover:rotate-6 transition-transform duration-300">
+          <span className="text-primary-foreground text-4xl sm:text-5xl font-black drop-shadow-lg">?</span>
         </div>
-        <h1 className="text-5xl sm:text-6xl font-black tracking-tighter mb-2 text-foreground">Meneer Wit</h1>
+        <h1 className="text-5xl sm:text-6xl font-black tracking-tighter mb-2 text-foreground drop-shadow-sm">Meneer Wit</h1>
         <p className="text-base sm:text-lg text-muted-foreground font-medium">De Nederlandse Mister White</p>
       </div>
       
       <button 
         onClick={onStartSetup}
-        className="w-full max-w-xs py-5 bg-primary text-primary-foreground rounded-3xl font-bold text-xl sm:text-2xl hover:bg-primary/90 hover:scale-105 transition-all active:scale-95 shadow-xl mb-12"
+        className="w-full max-w-xs py-5 bg-primary text-primary-foreground rounded-3xl font-bold text-xl sm:text-2xl hover:bg-primary/90 hover:scale-105 transition-all active:scale-95 shadow-2xl shadow-primary/30 hover:shadow-primary/40 mb-12 flex items-center justify-center gap-3"
       >
+        <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current" />
         Speel Nu
       </button>
 
       <div className="fixed bottom-0 left-0 right-0 p-6 sm:p-8 bg-background/80 backdrop-blur-md border-t border-border flex justify-around items-center z-10">
         <button onClick={() => { playSound('click'); setShowRules(true); }} className="flex flex-col items-center gap-1 group transition-transform hover:scale-110">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
-            <span className="text-lg">📖</span>
+            <BookOpen className="w-5 h-5" />
           </div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground">Regels</span>
         </button>
 
         <button onClick={() => { playSound('click'); setShowExplanation(true); }} className="flex flex-col items-center gap-1 group transition-transform hover:scale-110">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
-            <span className="text-lg">❓</span>
+            <HelpCircle className="w-5 h-5" />
           </div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground">Uitleg</span>
         </button>
 
         <button onClick={() => { onShowLeaderboard(); }} className="flex flex-col items-center gap-1 group transition-transform hover:scale-110">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
-            <span className="text-lg">🏆</span>
+            <Trophy className="w-5 h-5" />
           </div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground">Ranglijst</span>
         </button>
 
         <button onClick={() => { playSound('click'); setShowSettings(true); }} className="flex flex-col items-center gap-1 group transition-transform hover:scale-110">
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
-            <span className="text-lg">⚙️</span>
+            <SettingsIcon className="w-5 h-5" />
           </div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground">Opties</span>
         </button>

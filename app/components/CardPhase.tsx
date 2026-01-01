@@ -88,7 +88,6 @@ export default function CardPhase({
               onChange={(e) => setPlayerNameInput(e.target.value)}
               className="w-full p-3 sm:p-4 bg-secondary rounded-2xl text-center font-bold text-lg sm:text-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all hover:bg-secondary/80 border-2 border-border focus:border-primary"
               placeholder="Je naam..."
-              autoFocus
             />
           </div>
 

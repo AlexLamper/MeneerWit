@@ -34,6 +34,22 @@ export default function GameRound({
   const [newPlayer, setNewPlayer] = useState<Player | null>(null);
   const prevPlayerCount = useRef(gameState ? gameState.players.length : 0);
 
+  // Calculate player order for description phase
+  const activePlayers = gameState?.players.filter(p => !p.isEliminated) || [];
+  let startIndex = 0;
+  if (settings.misterWhiteStarts) {
+    const mwIndex = activePlayers.findIndex(p => p.role === "Mister White");
+    if (mwIndex !== -1) {
+      startIndex = mwIndex;
+    }
+  }
+
+  const getPlayerOrder = (playerId: number) => {
+    const playerIndex = activePlayers.findIndex(p => p.id === playerId);
+    if (playerIndex === -1) return null;
+    return ((playerIndex - startIndex + activePlayers.length) % activePlayers.length) + 1;
+  };
+
   useEffect(() => {
     if (!gameState) return;
     if (gameState.players.length > prevPlayerCount.current) {
@@ -78,31 +94,38 @@ export default function GameRound({
   };
 
   return (
-    <div className="flex flex-col h-full p-4 sm:p-6 bg-background overflow-hidden">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Speelronde</h2>
+    <div className="flex flex-col h-full p-4 sm:p-6 bg-background animate-fade-in overflow-hidden pt-8 sm:pt-12">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Omschrijf-fase</h2>
       <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">
         {viewMode 
           ? "Selecteer je eigen kaart om je woord te zien." 
-          : "Iedereen heeft zijn woord gezien. Beschrijf je geheime woord nu met een woord of zin!"}
+          : "Beschrijf je woord nu met één woord of zin, in de volgorde van de nummers!"}
       </p>
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">
-        <div className="grid grid-cols-2 gap-2 sm:gap-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-4 px-2">
           {gameState.players.map(player => (
             <button 
               key={player.id} 
               onClick={() => handleCardClick(player)}
               disabled={!viewMode || player.isEliminated}
-              className={`p-4 sm:p-6 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left 
+              className={`pl-2 pr-2 py-3 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left 
                 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50' : 'bg-card shadow-sm'}
                 ${viewMode && !player.isEliminated ? 'border-primary cursor-pointer hover:bg-secondary/30 ring-2 ring-primary/20' : 'border-border'}
               `}
             >
-              <div className="w-8 h-8 sm:w-12 sm:h-12 shrink-0 bg-secondary rounded-full flex items-center justify-center mr-2 sm:mr-3 text-muted-foreground">
-                <User className="w-5 h-5 sm:w-8 sm:h-8" />
+              {/* Order Badge */}
+              {!player.isEliminated && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs sm:text-sm font-black shadow-md border-2 border-background z-10">
+                  {getPlayerOrder(player.id)}
+                </div>
+              )}
+
+              <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-secondary rounded-full flex items-center justify-center mr-1.5 sm:mr-2 text-muted-foreground">
+                <User className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-bold truncate text-sm sm:text-lg leading-tight">{player.name}</div>
+                <div className="font-bold text-sm sm:text-lg leading-tight break-words">{player.name}</div>
                 <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">{player.isEliminated ? 'Geëlimineerd' : 'Actief'}</div>
               </div>
             </button>

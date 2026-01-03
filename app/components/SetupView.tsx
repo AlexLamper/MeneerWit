@@ -61,7 +61,7 @@ export default function SetupView({
             step="1"
             value={playerCount} 
             onChange={(e) => setPlayerCount(parseInt(e.target.value))}
-            className="w-full h-3 bg-secondary rounded-full appearance-none cursor-pointer accent-primary hover:bg-secondary/80 transition-colors"
+            className="custom-slider"
           />
         </div>
 

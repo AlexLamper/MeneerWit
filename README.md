@@ -14,12 +14,13 @@ Het doel is simpel: ontmasker de **Mister White** voordat hij het geheime woord 
 3.  **Mister White**: Krijgt **geen** woord. Hij moet bluffen en proberen te achterhalen wat het woord is door goed te luisteren naar de anderen.
 
 ### Het Spelverloop
-1.  **Rollen verdelen**: Iedereen bekijkt stiekem zijn rol op de telefoon.
-2.  **Beschrijven**: Om de beurt noemt elke speler één woord dat met hun geheime woord te maken heeft.
+1.  **Rollen verdelen**: Iedereen bekijkt stiekem zijn rol op de telefoon. Niemand weet elkaars rol.
+2.  **Beschrijven**: Een willekeurige speler begint (niet Mister White in ronde 1). Om de beurt noemt elke speler één woord dat met hun geheime woord te maken heeft.
 3.  **Stemmen**: Na de ronde stemt de groep wie ze denken dat Mister White is.
 4.  **Ontknoping**:
-    *   Wordt Mister White weggestemd? Dan heeft hij nog één kans om het woord van de Burgers te raden om alsnog te winnen.
-    *   Wordt een Burger of Undercover weggestemd? Dan wint Mister White.
+    *   **Mister White wint** als hij geëlimineerd wordt maar het woord van de Burgers goed raadt.
+    *   **Burgers winnen** (2 punten) als ze alle Undercovers en Mister Whites elimineren.
+    *   **Infiltranten winnen** (Undercover 10 pnt, Mr White 6 pnt) als ze overleven tot er nog maar 1 Burger over is.
 
 ##  Technologieën
 

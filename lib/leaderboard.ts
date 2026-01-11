@@ -75,41 +75,37 @@ export const updateLeaderboard = (gameState: GameState, mwGuessedCorrectly: bool
     let pointsEarned = 0;
     let isWinner = false;
 
-    // Logic for Mister White
-    if (player.role === "Mister White") {
-      if (gameState.winner === "Mister White") {
+    // Victory: Civilians 2 pts, Mr. White 6 pts, Undercover 10 pts
+    
+    if (gameState.winner === "Burgers") {
+      if (player.role === "Burger") {
         isWinner = true;
-        if (mwGuessedCorrectly) {
-           pointsEarned += 100;
-           stats.misterWhiteGuessWins++;
-        } else {
-           pointsEarned += 80;
-        }
+        pointsEarned = 2;
+      }
+    } 
+    else if (gameState.winner === "Infiltrators") {
+      // Infiltrators win (Undercovers and Mr. Whites team up)
+      if (player.role === "Undercover") {
+        isWinner = true;
+        pointsEarned = 10;
+      } else if (player.role === "Mister White") {
+        isWinner = true;
+        pointsEarned = 6;
+      }
+    }
+    else if (gameState.winner === "Mister White") {
+      // Mister White wins by guessing
+      if (player.role === "Mister White") {
+        isWinner = true;
+        pointsEarned = 6;
       }
     }
     
-    // Logic for Undercover
-    else if (player.role === "Undercover") {
-      if (gameState.winner === "Undercovers") {
+    // Legacy support or fallback: if winner was just "Undercovers" from old state
+    // Treat as Infiltrators win for Undercovers
+    else if (gameState.winner === "Undercovers" && player.role === "Undercover") {
         isWinner = true;
-        pointsEarned += 60;
-      }
-    }
-    
-    // Logic for Burger
-    else if (player.role === "Burger") {
-      if (gameState.winner === "Burgers") {
-        isWinner = true;
-        pointsEarned += 30;
-      }
-    }
-
-    // Survival Bonus (for everyone)
-    // If you won AND you were not eliminated, +10 bonus
-    // (Note: Mister White survival win already includes this implicitly in the 80 vs 100 logic, 
-    // but let's add it explicitly for team players)
-    if (isWinner && !player.isEliminated && player.role !== "Mister White") {
-      pointsEarned += 10;
+        pointsEarned = 10;
     }
 
     if (isWinner) stats.wins++;

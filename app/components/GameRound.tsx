@@ -37,6 +37,20 @@ export default function GameRound({
   // Calculate player order for description phase
   const activePlayers = gameState?.players.filter(p => !p.isEliminated) || [];
   let startIndex = 0;
+
+  // Determine starting index based on randomly selected startingPlayerId
+  if (gameState && typeof gameState.startingPlayerId === 'number') {
+    const startId = gameState.startingPlayerId;
+    // activePlayers is sorted by ID (asc). Find the first player with ID >= startId
+    const foundIndex = activePlayers.findIndex(p => p.id >= startId);
+    if (foundIndex !== -1) {
+      startIndex = foundIndex;
+    } else {
+      // If no player with ID >= startId (e.g. startId was higher than all remaining), wrap to 0
+      startIndex = 0;
+    }
+  }
+
   if (settings.misterWhiteStarts) {
     const mwIndex = activePlayers.findIndex(p => p.role === "Mister White");
     if (mwIndex !== -1) {
@@ -61,6 +75,22 @@ export default function GameRound({
   }, [gameState?.players.length]);
 
   if (!gameState) return null;
+
+  // Derive the display order of players based on startingPlayerId
+  // Rotate the list so the starting player is first
+  const getDisplayPlayers = () => {
+    const players = [...gameState.players];
+    // Assuming players are sorted by ID in gameState.players usually, but let's just find the generic index
+    // If startingPlayerId is not set, default to 0
+    const startId = gameState.startingPlayerId ?? 0;
+    const startIndex = players.findIndex(p => p.id === startId);
+    
+    if (startIndex <= 0) return players;
+    
+    return [...players.slice(startIndex), ...players.slice(0, startIndex)];
+  };
+
+  const displayPlayers = getDisplayPlayers();
 
   const handleCardClick = (player: Player) => {
     if (!viewMode || player.isEliminated) return;
@@ -104,7 +134,7 @@ export default function GameRound({
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">
         <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-4 px-2">
-          {gameState.players.map(player => (
+          {displayPlayers.map(player => (
             <button 
               key={player.id} 
               onClick={() => handleCardClick(player)}

@@ -41,7 +41,8 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
       <div className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-muted-foreground">Einde Spel</div>
       <h2 className="text-5xl font-black mb-8 leading-tight">
         {gameState.winner === "Burgers" ? "Burgers winnen!" : 
-         gameState.winner === "Undercovers" ? "Undercovers winnen!" : "Mister White wint!"}
+         gameState.winner === "Mister White" ? "Mister White wint!" : 
+         "Infiltranten winnen!"}
       </h2>
 
       <div className="w-full space-y-2 mb-12 max-h-[40vh] overflow-y-auto pr-2">

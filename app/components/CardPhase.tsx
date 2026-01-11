@@ -139,13 +139,14 @@ export default function CardPhase({
 
               {/* Back of the card (Revealed) */}
               <div className="absolute inset-0 backface-hidden rotate-y-180 bg-card text-card-foreground rounded-[2.5rem] shadow-2xl flex flex-col items-center justify-center p-8 border-2 border-border overflow-hidden">
-                <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Rol</div>
-                <div className="text-3xl font-black mb-8 text-foreground">
-                  {currentPlayer.role === "Burger" ? "Burger" : 
-                   currentPlayer.role === "Undercover" ? "Undercover" : "Mister White"}
-                </div>
-                
-                <div className="w-16 h-px bg-border mb-8" />
+                {currentPlayer.role === "Mister White" && (
+                  <>
+                    <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Rol</div>
+                    <div className="text-3xl font-black mb-8 text-foreground">Mister White</div>
+                    
+                    <div className="w-16 h-px bg-border mb-8" />
+                  </>
+                )}
                 
                 <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Woord</div>
                 <div className="text-4xl font-black text-primary tracking-tight">

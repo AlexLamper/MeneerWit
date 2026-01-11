@@ -75,6 +75,7 @@ export default function Home() {
     setIsCardOpen(false);
     setShowGuessResult(null);
     setMisterWhiteGuess("");
+    setShowMisterWhiteGuess(false); // Reset to ensure no modal on start
     
     // Reset custom words after starting so they don't persist to the next game
     setCustomWordPair({ burger: "", undercover: "" }); 
@@ -163,7 +164,18 @@ export default function Home() {
       hasSeenCard: false
     }));
 
-    setGameState({ ...gameState, wordPair: newWordPair, players: updatedPlayers });
+    // Choose a new random starting player (avoiding Mister White if we treat this as a restart of the round)
+    let newStartingPlayerId = Math.floor(Math.random() * gameState.players.length);
+    while (updatedPlayers[newStartingPlayerId].role === "Mister White") {
+      newStartingPlayerId = (newStartingPlayerId + 1) % gameState.players.length;
+    }
+
+    setGameState({ 
+      ...gameState, 
+      wordPair: newWordPair, 
+      players: updatedPlayers,
+      startingPlayerId: newStartingPlayerId
+    });
     setCurrentPlayerIndex(0);
     setView("card-phase");
     playSound('click');
@@ -205,20 +217,10 @@ export default function Home() {
       return;
     } 
 
-    // Mister White wins if he survives until only 2 players are left
-    if (activePlayers.length <= 2 && misterWhites > 0) {
+    // Infiltrators (Undercovers and/or Mr. Whites) win if only 1 Civilian is left
+    if (burgers <= 1) {
       playSound('win');
-      const finalState = { ...state, winner: "Mister White" } as GameState;
-      updateLeaderboard(finalState, false);
-      setGameState(finalState);
-      setView("end-game");
-      return;
-    }
-    
-    // Undercovers win if all civilians are eliminated and Undercover is still alive
-    if (burgers === 0 && undercovers > 0) {
-      playSound('win');
-      const finalState = { ...state, winner: "Undercovers" } as GameState;
+      const finalState = { ...state, winner: "Infiltrators" } as GameState;
       updateLeaderboard(finalState, false);
       setGameState(finalState);
       setView("end-game");
@@ -226,6 +228,60 @@ export default function Home() {
     }
 
     // If no one won yet, continue to next round
+    // Rotate starting player to the next active player
+    let nextStartingPlayerId = state.startingPlayerId;
+    
+    if (typeof nextStartingPlayerId === 'number') {
+      // Sort active players by ID to ensure consistent order
+      const sortedActive = [...activePlayers].sort((a, b) => a.id - b.id);
+      
+      // Find where the current starting player is (or would be)
+      // We look for the first player with ID >= current starting ID
+      // If the current starter is still active, this will find them.
+      // If they were eliminated, this finds the next person.
+      const nextIndex = sortedActive.findIndex(p => p.id >= nextStartingPlayerId);
+      
+      if (nextIndex !== -1) {
+        // If we found the current starter (or their successor position), 
+        // we want to move to the NEXT person relative to them.
+        // However, if the starter was just eliminated (which shouldn't happen usually as we just voted?), 
+        // wait, we just came from VotingPhase. Someone was eliminated.
+        // If the eliminated person IS the starting player, then the start token moves naturally to the next person?
+        // Or do we want to shift it +1?
+        
+        // Let's assume we always shift +1 slot.
+        // If current starter is P1. P1 is still in game. Next round P2 starts.
+        // If current starter is P1. P1 is eliminated. Next round P2 starts.
+        
+        // So we find the player who matches or follows P1.
+        // If P1 is present at index i. We want index i+1.
+        // If P1 is absent, and P2 is at index i. P2 is effectively the "current" spot. Should we skip P2?
+        // Usually, the "Dealer button" moves.
+        // Let's just say: Find current starter. If found, move to next. If not found (eliminated), the person who sat there acts out? 
+        // No, usually it moves to next.
+        
+        const currentStarterStillActive = sortedActive.some(p => p.id === nextStartingPlayerId);
+        
+        if (currentStarterStillActive) {
+           const idx = sortedActive.findIndex(p => p.id === nextStartingPlayerId);
+           // Move to next
+           nextStartingPlayerId = sortedActive[(idx + 1) % sortedActive.length].id;
+        } else {
+           // Starter was eliminated. The token effectively moves to the next person automatically?
+           // Or should we explicitly move it to the *next* next?
+           // Let's say: Next active player becomes the starter.
+           // Since the previous starter is gone, the person who 'inherits' the spot starts.
+           const nextPlayer = sortedActive.find(p => p.id > nextStartingPlayerId) || sortedActive[0];
+           nextStartingPlayerId = nextPlayer.id;
+        }
+
+      } else {
+        // If ID was higher than any active player (wrapped), start at 0
+        nextStartingPlayerId = sortedActive[0].id;
+      }
+    }
+
+    setGameState({ ...state, startingPlayerId: nextStartingPlayerId });
     setView("game-round");
   };
 

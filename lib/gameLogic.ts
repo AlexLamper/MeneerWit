@@ -16,7 +16,8 @@ export interface GameState {
   wordPair: WordPair;
   phase: "setup" | "card-phase" | "game-round" | "voting" | "end-game";
   currentPlayerIndex: number;
-  winner: "Burgers" | "Undercovers" | "Mister White" | null;
+  winner: "Burgers" | "Undercovers" | "Mister White" | "Infiltrators" | null;
+  startingPlayerId: number;
 }
 
 export const getInitialRoles = (playerCount: number) => {
@@ -77,11 +78,18 @@ export const setupGame = (
     hasSeenCard: false
   }));
 
+  // Determine starting player randomly, but ensure it's not Mister White for the first round
+  let startingPlayerId = Math.floor(Math.random() * playerCount);
+  while (players[startingPlayerId].role === "Mister White") {
+    startingPlayerId = (startingPlayerId + 1) % playerCount;
+  }
+
   return {
     players,
     wordPair,
     phase: "card-phase",
     currentPlayerIndex: 0,
-    winner: null
+    winner: null,
+    startingPlayerId
   };
 };

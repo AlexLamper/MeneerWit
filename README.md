@@ -1,4 +1,4 @@
-﻿#  Meneer Wit
+﻿#  Meneer Wit - De Nederlandse Mister White
 
 Een digitale versie van het populaire gezelschapsspel "Mr. White" (ook wel bekend als *Undercover*). Dit project is gebouwd als een snelle, mobiel-vriendelijke webapplicatie.
 
@@ -21,6 +21,10 @@ Het doel is simpel: ontmasker de **Mister White** voordat hij het geheime woord 
     *   **Mister White wint** als hij geëlimineerd wordt maar het woord van de Burgers goed raadt.
     *   **Burgers winnen** (2 punten) als ze alle Undercovers en Mister Whites elimineren.
     *   **Infiltranten winnen** (Undercover 10 pnt, Mr White 6 pnt) als ze overleven tot er nog maar 1 Burger over is.
+
+##  Waarom heb ik het spel 'opnieuw' gemaakt als het al bestaat?
+
+Na het vaak spelen van het spel 'Undercover' met familie en vrienden kende ik uiteindelijk alle woorden/woordenparen. Dit maakte het spel een stuk minder leuk. Vervolgens was er de optie om te betalen voor extra woordenparen. Daarom heb ik een eigen versie gemaakt die gratis is en een onbeperkt aantal woordenparen bevat. De woorden zijn niet letterlijk “onbeperkt”, maar met meer dan 1000+ woordenparen is de kans zeer klein dat je hetzelfde woordenpaar meerdere keren krijgt.
 
 ##  Technologieën
 

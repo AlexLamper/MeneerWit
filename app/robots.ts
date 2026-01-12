@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/private/',
     },
-    sitemap: 'https://meneerwit.nl/sitemap.xml',
+    sitemap: 'https://www.meneerwit.com/sitemap.xml',
   };
 }

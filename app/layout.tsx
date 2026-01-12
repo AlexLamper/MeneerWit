@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.meneerwit.com'),
+  alternates: {
+    canonical: '/',
+  },
   title: "Meneer Wit | Gratis Online Undercover Spel (Nederlands)",
   description: "Speel gratis het populaire gezelschapsspel Meneer Wit (Undercover) online! Raad wie de bedrieger is in dit spannende woordspel. Geen app download nodig, direct spelen in je browser met duizenden Nederlandse woorden.",
   applicationName: "Meneer Wit",
@@ -42,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Meneer Wit - Het Gratis Online Undercover Spel",
     description: "Speel nu gratis Mister White / Undercover met je vrienden! Ontmasker de bedrieger voordat het te laat is. 100% gratis en geen download nodig.",
-    url: "https://meneerwit.nl", // Assuming a domain, or relative
+    url: "https://www.meneerwit.com",
     siteName: "Meneer Wit",
     locale: "nl_NL",
     type: "website",
@@ -72,9 +76,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/favicon/site.webmanifest",
-  alternates: {
-    canonical: "https://meneerwit.nl",
-  },
 };
 
 export default function RootLayout({
@@ -99,7 +100,7 @@ export default function RootLayout({
       "ratingValue": "4.8",
       "ratingCount": "1024"
     },
-    "url": "https://meneerwit.nl",
+    "url": "https://www.meneerwit.com",
     "publisher": {
       "@type": "Organization",
       "name": "Meneer Wit Games"

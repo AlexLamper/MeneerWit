@@ -39,8 +39,16 @@ export const getInitialRoles = (playerCount: number) => {
 export const shuffleArray = <T>(array: T[]): T[] => {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    let r = Math.random();
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      r = arr[0] / 4294967296;
+    }
+    const j = Math.floor(r * (i + 1));
+    const temp = newArray[i];
+    newArray[i] = newArray[j];
+    newArray[j] = temp;
   }
   return newArray;
 };

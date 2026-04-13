@@ -56,7 +56,7 @@ export default function CardPhase({
     
     // Check for duplicates
     const isDuplicate = gameState.players.some((p, index) => 
-      index !== currentPlayerIndex && 
+      index < currentPlayerIndex && 
       p.name.toLowerCase().trim() === nameToUse.toLowerCase()
     );
 

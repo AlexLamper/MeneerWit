@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { GameState, Player } from "@/lib/gameLogic";
-import { RefreshCcw, Settings, UserPlus, Eye, User } from "lucide-react";
+import { RefreshCcw, Settings, UserPlus, Eye, User, ChevronRight } from "lucide-react";
 import SettingsModal from "./SettingsModal";
 
 interface GameRoundProps {
@@ -125,7 +125,7 @@ export default function GameRound({
 
   return (
     <div className="flex flex-col h-full p-4 sm:p-6 animate-fade-in overflow-hidden pt-8 sm:pt-12">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Omschrijf-fase</h2>
+      <h2 className="text-2xl sm:text-3xl font-black mb-2 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Omschrijf-fase</h2>
       <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">
         {viewMode 
           ? "Selecteer je eigen kaart om je woord te zien." 
@@ -166,9 +166,10 @@ export default function GameRound({
       <div className="mt-auto space-y-4">
         <button 
           onClick={onStartVoting}
-          className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-primary/90 hover:scale-[1.02] shadow-lg"
+          className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-primary/90 hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2"
         >
           Ga naar stemmen
+          <ChevronRight className="w-5 h-5" />
         </button>
 
         <div className="flex justify-between items-center gap-2 p-2 bg-secondary/50 rounded-2xl">

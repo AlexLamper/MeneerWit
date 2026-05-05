@@ -1,6 +1,7 @@
 import { GameState } from "@/lib/gameLogic";
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
+import { ChevronRight } from "lucide-react";
 
 interface EndGameProps {
   gameState: GameState | null;
@@ -39,7 +40,7 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
   return (
     <div className="flex flex-col h-full p-6 items-center justify-center text-center animate-zoom-in">
       <div className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-muted-foreground">Einde Spel</div>
-      <h2 className="text-5xl font-black mb-8 leading-tight">
+      <h2 className="text-5xl font-black mb-8 leading-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
         {gameState.winner === "Burgers" ? "Burgers winnen!" : 
          gameState.winner === "Mister White" ? "Mister White wint!" : 
          "Infiltranten winnen!"}
@@ -67,9 +68,10 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <button 
           onClick={onRestart}
-          className="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02]"
+          className="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02] flex items-center justify-center gap-2"
         >
           Opnieuw spelen
+          <ChevronRight className="w-5 h-5" />
         </button>
         <button 
           onClick={onHome}

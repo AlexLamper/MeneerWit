@@ -45,7 +45,7 @@ export default function SettingsModal({ onClose, settings, onSettingsChange, pla
             </div>
           </div>
 
-          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-bold">Versie 1.0.1 • Meneer Wit - Door Alex Lamper</p>
+          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-bold">Versie 1.0.2 • Meneer Wit - Door Alex Lamper</p>
         </div>
         <button 
           onClick={onClose}

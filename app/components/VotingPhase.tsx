@@ -51,7 +51,7 @@ export default function VotingPhase({
 
   return (
     <div className="flex flex-col h-full p-4 sm:p-6 animate-fade-in overflow-hidden pt-8 sm:pt-12">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Wie is verdacht?</h2>
+      <h2 className="text-2xl sm:text-3xl font-black mb-2 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Wie is verdacht?</h2>
       <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">Klik op een speler om te stemmen. De speler met de meeste stemmen wordt geëlimineerd.</p>
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">

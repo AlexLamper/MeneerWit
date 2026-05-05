@@ -30,7 +30,7 @@ export default function LeaderboardView({ onBack, playSound }: LeaderboardViewPr
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="-ml-0.5"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <h2 className="text-3xl font-black truncate">Ranglijst</h2>
+          <h2 className="text-3xl font-black truncate bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Ranglijst</h2>
         </div>
       </div>
 

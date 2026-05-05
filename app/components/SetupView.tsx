@@ -1,4 +1,5 @@
 import { CATEGORIES } from "@/lib/gameData";
+import { ChevronRight } from "lucide-react";
 
 interface SetupViewProps {
   playerCount: number;
@@ -47,7 +48,7 @@ export default function SetupView({
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="-ml-0.5"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-        <h2 className="text-xl sm:text-2xl font-bold">Spelconfiguratie</h2>
+        <h2 className="text-xl sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Spelconfiguratie</h2>
       </div>
       
       <div className="flex-1 overflow-y-auto pr-2 space-y-6 sm:space-y-8">
@@ -152,9 +153,10 @@ export default function SetupView({
       <button 
         disabled={!isValid}
         onClick={onStartGame}
-        className="mt-2 w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold text-lg disabled:opacity-30 transition-all active:scale-95 hover:scale-[1.02] shadow-lg"
+        className="mt-2 w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold text-lg disabled:opacity-30 transition-all active:scale-95 hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2"
       >
         Start spel
+        <ChevronRight className="w-5 h-5" />
       </button>
     </div>
   );

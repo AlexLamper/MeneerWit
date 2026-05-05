@@ -77,7 +77,7 @@ export default function CardPhase({
     <div className="flex flex-col h-full p-4 sm:p-6 items-center justify-center text-center">
       {!isCardOpen ? (
         <div className="w-full max-w-xs animate-fade-in">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">Geef de telefoon aan</h2>
+          <h2 className="text-xl sm:text-2xl font-black mb-2 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Geef de telefoon aan</h2>
           <div className="text-3xl sm:text-4xl font-black mb-6 sm:mb-8">Speler {currentPlayerIndex + 1}</div>
           
           <div className="mb-6 sm:mb-8 text-left">
@@ -129,12 +129,12 @@ export default function CardPhase({
               className={`relative w-full h-full transition-transform duration-700 preserve-3d cursor-pointer ${showWord ? 'rotate-y-180' : ''}`}
             >
               {/* Front of the card (Hidden) */}
-              <div className="absolute inset-0 backface-hidden bg-primary dark:bg-secondary rounded-[2.5rem] shadow-2xl flex flex-col items-center justify-center p-8 border-4 border-primary-foreground/10 dark:border-primary/10">
-                <div className="w-20 h-20 bg-primary-foreground/10 dark:bg-primary/10 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-4xl text-primary-foreground dark:text-primary font-black">?</span>
+              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-zinc-800 dark:to-zinc-900 rounded-[2.5rem] shadow-2xl flex flex-col items-center justify-center p-8 border-2 border-border/60">
+                <div className="w-20 h-20 bg-foreground/8 rounded-full flex items-center justify-center mb-6">
+                  <span className="text-4xl text-foreground font-black">?</span>
                 </div>
-                <h3 className="text-primary-foreground dark:text-primary text-2xl font-black mb-2">Tik om te onthullen</h3>
-                <p className="text-primary-foreground/60 dark:text-primary/60 text-sm">Zorg dat niemand meekijkt!</p>
+                <h3 className="text-foreground text-2xl font-black mb-2">Tik om te onthullen</h3>
+                <p className="text-muted-foreground text-sm">Zorg dat niemand meekijkt!</p>
               </div>
 
               {/* Back of the card (Revealed) */}
@@ -149,7 +149,7 @@ export default function CardPhase({
                 )}
                 
                 <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Woord</div>
-                <div className="text-4xl font-black text-primary tracking-tight">
+                <div className="text-4xl font-black text-foreground tracking-tight">
                   {currentPlayer.role === "Mister White" ? "???" : currentPlayer.word}
                 </div>
                 

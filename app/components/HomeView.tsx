@@ -27,7 +27,7 @@ export default function HomeView({ onStartSetup, onShowLeaderboard, settings, on
           <img
             src="/favicon/android-chrome-192x192.png"
             alt="Meneer Wit logo"
-            className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 shrink-0"
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-xl hover:scale-105 transition-all duration-300 shrink-0 dark:ring-2 dark:ring-white/15 dark:ring-offset-2 dark:ring-offset-background dark:shadow-[0_12px_40px_-6px_rgba(0,0,0,0.75)]"
           />
           <h1 className="text-4xl sm:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Meneer Wit</h1>
         </div>
@@ -35,7 +35,7 @@ export default function HomeView({ onStartSetup, onShowLeaderboard, settings, on
         <div className="flex items-center gap-2 justify-center mt-3 flex-wrap">
           {[
             { icon: "✦", label: "100% Gratis" },
-            { icon: "👥", label: "2–10 spelers" },
+            { icon: "👥", label: "2-10 spelers" },
             { icon: "⚡", label: "Geen download" },
           ].map(({ icon, label }) => (
             <span key={label} className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground">

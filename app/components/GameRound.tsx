@@ -64,6 +64,13 @@ export default function GameRound({
     return ((playerIndex - startIndex + activePlayers.length) % activePlayers.length) + 1;
   };
 
+  const orderedActivePlayers = [...activePlayers].sort((a, b) => {
+    const orderA = getPlayerOrder(a.id) ?? Number.MAX_SAFE_INTEGER;
+    const orderB = getPlayerOrder(b.id) ?? Number.MAX_SAFE_INTEGER;
+    return orderA - orderB;
+  });
+  const startingPlayer = orderedActivePlayers[0] ?? null;
+
   useEffect(() => {
     if (!gameState) return;
     if (gameState.players.length > prevPlayerCount.current) {
@@ -131,10 +138,48 @@ export default function GameRound({
           ? "Selecteer je eigen kaart om je woord te zien." 
           : "Beschrijf je woord nu met één woord of zin, in de volgorde van de nummers!"}
       </p>
+
+      {!viewMode && startingPlayer && (
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl border border-primary/30 bg-primary/10 animate-fade-in">
+          <div className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary mb-2">Beurtvolgorde</div>
+          <p className="text-xs sm:text-sm font-semibold mb-3">
+            <span className="font-black">Start bij {startingPlayer.name}</span> en ga daarna verder volgens de nummers.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {orderedActivePlayers.map(player => {
+              const order = getPlayerOrder(player.id);
+              if (!order) return null;
+              const isStartingPlayer = order === 1;
+              return (
+                <div
+                  key={`order-${player.id}`}
+                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] sm:text-xs font-bold border ${
+                    isStartingPlayer
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card border-border text-foreground"
+                  }`}
+                >
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${
+                    isStartingPlayer ? "bg-primary-foreground/20" : "bg-secondary"
+                  }`}>
+                    {order}
+                  </span>
+                  <span>{player.name}</span>
+                  {isStartingPlayer && <span className="uppercase tracking-wide">Start</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">
         <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-4 px-2">
-          {displayPlayers.map(player => (
+          {displayPlayers.map(player => {
+            const playerOrder = getPlayerOrder(player.id);
+            const isStartingPlayer = !player.isEliminated && playerOrder === 1;
+
+            return (
             <button 
               key={player.id} 
               onClick={() => handleCardClick(player)}
@@ -142,12 +187,13 @@ export default function GameRound({
               className={`pl-2 pr-2 py-3 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left 
                 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50' : 'bg-card shadow-sm'}
                 ${viewMode && !player.isEliminated ? 'border-primary cursor-pointer hover:bg-secondary/30 ring-2 ring-primary/20' : 'border-border'}
+                ${isStartingPlayer ? 'ring-2 ring-primary/40 border-primary' : ''}
               `}
             >
               {/* Order Badge */}
               {!player.isEliminated && (
                 <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs sm:text-sm font-black shadow-md border-2 border-background z-10">
-                  {getPlayerOrder(player.id)}
+                  {playerOrder}
                 </div>
               )}
 
@@ -156,10 +202,12 @@ export default function GameRound({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="font-bold text-sm sm:text-lg leading-tight break-words">{player.name}</div>
-                <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">{player.isEliminated ? 'Geëlimineerd' : 'Actief'}</div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                  {player.isEliminated ? 'Geëlimineerd' : isStartingPlayer ? 'Start Speler' : 'Actief'}
+                </div>
               </div>
             </button>
-          ))}
+          )})}
         </div>
       </div>
 

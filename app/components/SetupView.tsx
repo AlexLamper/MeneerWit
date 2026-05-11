@@ -29,7 +29,7 @@ export default function SetupView({
   playSound 
 }: SetupViewProps) {
   const totalRoles = roles.burgers + roles.undercovers + roles.misterWhites;
-  const isValid = totalRoles === playerCount && roles.undercovers >= 1 && roles.burgers >= 2;
+  const isValid = totalRoles === playerCount && roles.burgers >= 2;
 
   const updateRole = (type: keyof typeof roles, delta: number) => {
     playSound('click');
@@ -143,10 +143,13 @@ export default function SetupView({
       </div>
 
       {!isValid && (
-        <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-[10px] mb-4 animate-fade-in">
-          {totalRoles !== playerCount ? `Totaal aantal rollen (${totalRoles}) moet gelijk zijn aan aantal spelers (${playerCount}).` : 
-           roles.undercovers < 1 ? "Er moet minimaal 1 Undercover zijn." : 
-           "Er moeten minimaal 2 Burgers zijn."}
+        <div className="p-4 sm:p-5 bg-destructive/10 border border-destructive/25 text-destructive rounded-2xl mb-4 animate-fade-in">
+          <div className="text-sm sm:text-base font-black mb-1">Controleer je rolverdeling</div>
+          <div className="text-xs sm:text-sm leading-relaxed">
+            {totalRoles !== playerCount
+              ? `Je hebt nu ${totalRoles} rollen gekozen, maar er zijn ${playerCount} spelers. Zorg dat het totaal aantal rollen precies gelijk is aan het aantal spelers.`
+              : "Je hebt minimaal 2 Burgers nodig om een geldig spel te starten."}
+          </div>
         </div>
       )}
 

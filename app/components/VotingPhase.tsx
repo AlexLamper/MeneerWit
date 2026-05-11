@@ -27,7 +27,16 @@ export default function VotingPhase({
   const [eliminationStep, setEliminationStep] = useState<"confirm" | "reveal">("confirm");
 
   if (!gameState) return null;
-  const activePlayers = gameState.players.filter(p => !p.isEliminated);
+  // Keep player order identical to the game-round screen to avoid misclicks.
+  const getDisplayPlayers = () => {
+    const players = [...gameState.players];
+    const startId = gameState.startingPlayerId ?? 0;
+    const startIndex = players.findIndex(p => p.id === startId);
+    if (startIndex <= 0) return players;
+    return [...players.slice(startIndex), ...players.slice(0, startIndex)];
+  };
+
+  const displayPlayers = getDisplayPlayers();
 
   const handlePlayerClick = (player: Player) => {
     playSound('click');
@@ -56,7 +65,7 @@ export default function VotingPhase({
       
       <div className="flex-1 overflow-y-auto pr-2 mb-4 sm:mb-8">
         <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-4 px-2">
-          {gameState.players.map(player => (
+          {displayPlayers.map(player => (
             <button 
               key={player.id}
               disabled={player.isEliminated}

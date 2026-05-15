@@ -300,6 +300,13 @@ export default function GameRound({
             {viewingPlayer.role === "Mister White" ? "???" : viewingPlayer.word}
           </div>
 
+          {viewingPlayer.role === "Mister White" && gameState.misterWhiteHint && (
+            <div className="w-full max-w-xs rounded-2xl border border-primary/30 bg-primary/10 p-4 mb-8 text-center">
+              <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Hint</div>
+              <div className="text-sm font-bold">{gameState.misterWhiteHint}</div>
+            </div>
+          )}
+
           <button 
             onClick={handleCloseModal}
             className="w-full max-w-xs py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-secondary/80"

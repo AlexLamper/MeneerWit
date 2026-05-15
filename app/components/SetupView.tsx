@@ -10,6 +10,8 @@ interface SetupViewProps {
   setSelectedCategory: (category: string) => void;
   customWordPair: { burger: string; undercover: string };
   setCustomWordPair: (pair: { burger: string; undercover: string }) => void;
+  misterWhiteHintEnabled: boolean;
+  setMisterWhiteHintEnabled: (enabled: boolean) => void;
   onStartGame: () => void;
   onBack: () => void;
   playSound: (type: 'click' | 'win' | 'lose') => void;
@@ -24,6 +26,8 @@ export default function SetupView({
   setSelectedCategory,
   customWordPair,
   setCustomWordPair,
+  misterWhiteHintEnabled,
+  setMisterWhiteHintEnabled,
   onStartGame, 
   onBack, 
   playSound 
@@ -138,6 +142,29 @@ export default function SetupView({
               onChange={(e) => setCustomWordPair({ ...customWordPair, undercover: e.target.value })}
               className="bg-secondary p-3 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary transition-all"
             />
+          </div>
+        </div>
+
+        <div className="space-y-2 pb-2">
+          <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Mister White Hint</p>
+          <div
+            onClick={() => {
+              playSound('click');
+              setMisterWhiteHintEnabled(!misterWhiteHintEnabled);
+            }}
+            className="flex items-center justify-between p-3 bg-secondary rounded-xl hover:bg-secondary/80 transition-colors cursor-pointer"
+          >
+            <div>
+              <div className="font-bold text-xs sm:text-sm">Hint voor Mister White</div>
+              <div className="text-[10px] text-muted-foreground">
+                {misterWhiteHintEnabled
+                  ? "Aan: Mister White ziet de categorie van het woord"
+                  : "Uit: standaard gameplay zonder hint"}
+              </div>
+            </div>
+            <div className={`w-12 h-6 rounded-full relative transition-colors ${misterWhiteHintEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
+              <div className={`absolute top-1 w-4 h-4 bg-background rounded-full shadow-sm transition-all ${misterWhiteHintEnabled ? 'right-1' : 'left-1'}`} />
+            </div>
           </div>
         </div>
       </div>

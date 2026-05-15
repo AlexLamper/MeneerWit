@@ -14,6 +14,9 @@ export interface Player {
 export interface GameState {
   players: Player[];
   wordPair: WordPair;
+  selectedCategory: string;
+  misterWhiteHintEnabled: boolean;
+  misterWhiteHint: string | null;
   phase: "setup" | "card-phase" | "game-round" | "voting" | "end-game";
   currentPlayerIndex: number;
   winner: "Burgers" | "Undercovers" | "Mister White" | "Infiltrators" | null;
@@ -53,12 +56,24 @@ export const shuffleArray = <T>(array: T[]): T[] => {
   return newArray;
 };
 
+export const getCategoryForWordPair = (wordPair: WordPair): string | null => {
+  const categoryEntry = Object.entries(CATEGORIES).find(([, pairs]) =>
+    pairs.some(
+      (pair) =>
+        pair.burger === wordPair.burger && pair.undercover === wordPair.undercover
+    )
+  );
+
+  return categoryEntry ? categoryEntry[0] : null;
+};
+
 export const setupGame = (
   playerCount: number, 
   roles: { burgers: number, undercovers: number, misterWhites: number },
   existingNames?: string[],
   category: string = "Algemeen",
-  customWordPair?: WordPair
+  customWordPair?: WordPair,
+  misterWhiteHintEnabled: boolean = false
 ): GameState => {
   let wordPair: WordPair;
   
@@ -92,9 +107,17 @@ export const setupGame = (
     startingPlayerId = (startingPlayerId + 1) % playerCount;
   }
 
+  const selectedCategory = customWordPair && customWordPair.burger && customWordPair.undercover
+    ? "Eigen woorden"
+    : category;
+  const misterWhiteHint = misterWhiteHintEnabled ? `Categorie: ${selectedCategory}` : null;
+
   return {
     players,
     wordPair,
+    selectedCategory,
+    misterWhiteHintEnabled,
+    misterWhiteHint,
     phase: "card-phase",
     currentPlayerIndex: 0,
     winner: null,

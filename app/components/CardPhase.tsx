@@ -154,9 +154,17 @@ export default function CardPhase({
                 </div>
                 
                 {currentPlayer.role === "Mister White" && (
-                  <p className="mt-6 text-[10px] text-muted-foreground leading-relaxed max-w-50">
-                    Je hebt geen woord. Luister goed naar de hints van anderen en probeer niet op te vallen!
-                  </p>
+                  <div className="mt-6 text-[10px] text-muted-foreground leading-relaxed max-w-50 space-y-3">
+                    <p>
+                      Je hebt geen woord. Luister goed naar de hints van anderen en probeer niet op te vallen!
+                    </p>
+                    {gameState.misterWhiteHint && (
+                      <div className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-foreground">
+                        <span className="font-black uppercase tracking-wider text-[9px] text-primary">Hint</span>
+                        <div className="font-bold text-[11px]">{gameState.misterWhiteHint}</div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

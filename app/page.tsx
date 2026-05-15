@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GameState, getInitialRoles, setupGame } from "@/lib/gameLogic";
+import { GameState, getCategoryForWordPair, getInitialRoles, setupGame } from "@/lib/gameLogic";
 import { WORD_PAIRS } from "@/lib/gameData";
 import { updateLeaderboard } from "@/lib/leaderboard";
 import HomeView from "./components/HomeView";
@@ -28,6 +28,7 @@ export default function Home() {
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Algemeen");
   const [customWordPair, setCustomWordPair] = useState({ burger: "", undercover: "" });
+  const [misterWhiteHintEnabled, setMisterWhiteHintEnabled] = useState(false);
   const [settings, setSettings] = useState({
     soundEffects: true,
     misterWhiteStarts: false
@@ -68,7 +69,14 @@ export default function Home() {
   const handleStartGame = () => {
     playSound('click');
     // Use saved names if available, otherwise default
-    const state = setupGame(playerCount, roles, savedNames, selectedCategory, customWordPair);
+    const state = setupGame(
+      playerCount,
+      roles,
+      savedNames,
+      selectedCategory,
+      customWordPair,
+      misterWhiteHintEnabled
+    );
     setGameState(state);
     setView("card-phase");
     setCurrentPlayerIndex(0);
@@ -157,6 +165,7 @@ export default function Home() {
   const handleNewWords = () => {
     if (!gameState) return;
     const newWordPair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
+    const newCategory = getCategoryForWordPair(newWordPair) ?? "Algemeen";
     
     const updatedPlayers = gameState.players.map(p => ({
       ...p,
@@ -173,6 +182,8 @@ export default function Home() {
     setGameState({ 
       ...gameState, 
       wordPair: newWordPair, 
+      selectedCategory: newCategory,
+      misterWhiteHint: gameState.misterWhiteHintEnabled ? `Categorie: ${newCategory}` : null,
       players: updatedPlayers,
       startingPlayerId: newStartingPlayerId
     });
@@ -343,10 +354,14 @@ export default function Home() {
           playerCount={playerCount}
           setPlayerCount={setPlayerCount}
           roles={roles}
-          setRoles={setRoles}          selectedCategory={selectedCategory}
+          setRoles={setRoles}
+          selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           customWordPair={customWordPair}
-          setCustomWordPair={setCustomWordPair}          onStartGame={handleStartGame}
+          setCustomWordPair={setCustomWordPair}
+          misterWhiteHintEnabled={misterWhiteHintEnabled}
+          setMisterWhiteHintEnabled={setMisterWhiteHintEnabled}
+          onStartGame={handleStartGame}
           onBack={() => { playSound('click'); setView("home"); }}
           playSound={playSound}
         />

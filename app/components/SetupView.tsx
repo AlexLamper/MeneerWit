@@ -1,5 +1,5 @@
 import { CATEGORIES } from "@/lib/gameData";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 interface SetupViewProps {
   playerCount: number;
@@ -55,7 +55,7 @@ export default function SetupView({
         <h2 className="text-xl sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Spelconfiguratie</h2>
       </div>
       
-      <div className="flex-1 overflow-y-auto pr-2 space-y-6 sm:space-y-8">
+      <div className="flex-1 overflow-y-auto pr-2 space-y-3 sm:space-y-4">
         <div>
           <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mb-1 sm:mb-2">Aantal spelers</p>
           <div className="text-3xl sm:text-4xl font-bold mb-2">{playerCount} spelers</div>
@@ -110,60 +110,76 @@ export default function SetupView({
           </div>
         </div>
 
-        <div className="space-y-2">
-          <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Woord Categorie</p>
-          <div className="grid grid-cols-2 gap-2">
-            {Object.keys(CATEGORIES).map(cat => (
-              <button
-                key={cat}
-                onClick={() => { playSound('click'); setSelectedCategory(cat); }}
-                className={`p-2 rounded-lg font-bold text-xs transition-all ${selectedCategory === cat ? 'bg-primary text-primary-foreground shadow-md scale-[1.02]' : 'bg-secondary hover:bg-secondary/80'}`}
+        <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2">
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Woord Categorie</p>
+            <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  playSound("click");
+                  setSelectedCategory(e.target.value);
+                }}
+                aria-label="Kies woord categorie"
+                className="w-full appearance-none cursor-pointer rounded-xl border-2 border-border bg-secondary py-3 pl-3 pr-10 text-sm font-bold text-foreground shadow-sm outline-none transition-all hover:bg-secondary/80 focus:border-primary focus:ring-2 focus:ring-primary/40"
               >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-2 pb-4">
-          <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Eigen Woorden (Optioneel)</p>
-          <div className="grid grid-cols-2 gap-2">
-            <input 
-              type="text"
-              placeholder="Burger"
-              value={customWordPair.burger}
-              onChange={(e) => setCustomWordPair({ ...customWordPair, burger: e.target.value })}
-              className="bg-secondary p-3 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-            />
-            <input 
-              type="text"
-              placeholder="Undercover"
-              value={customWordPair.undercover}
-              onChange={(e) => setCustomWordPair({ ...customWordPair, undercover: e.target.value })}
-              className="bg-secondary p-3 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2 pb-2">
-          <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Mister White Hint</p>
-          <div
-            onClick={() => {
-              playSound('click');
-              setMisterWhiteHintEnabled(!misterWhiteHintEnabled);
-            }}
-            className="flex items-center justify-between p-3 bg-secondary rounded-xl hover:bg-secondary/80 transition-colors cursor-pointer"
-          >
-            <div>
-              <div className="font-bold text-xs sm:text-sm">Hint voor Mister White</div>
-              <div className="text-[10px] text-muted-foreground">
-                {misterWhiteHintEnabled
-                  ? "Aan: Mister White ziet de categorie van het woord"
-                  : "Uit: standaard gameplay zonder hint"}
-              </div>
+                {Object.keys(CATEGORIES).map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
+                aria-hidden
+              />
             </div>
-            <div className={`w-12 h-6 rounded-full relative transition-colors ${misterWhiteHintEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
-              <div className={`absolute top-1 w-4 h-4 bg-background rounded-full shadow-sm transition-all ${misterWhiteHintEnabled ? 'right-1' : 'left-1'}`} />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">
+              Eigen Woorden (Optioneel)
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                placeholder="Burger"
+                value={customWordPair.burger}
+                onChange={(e) => setCustomWordPair({ ...customWordPair, burger: e.target.value })}
+                className="bg-secondary p-3 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Undercover"
+                value={customWordPair.undercover}
+                onChange={(e) => setCustomWordPair({ ...customWordPair, undercover: e.target.value })}
+                className="bg-secondary p-3 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5 pb-2">
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">
+              Mister White Hint
+            </p>
+            <div
+              onClick={() => {
+                playSound('click');
+                setMisterWhiteHintEnabled(!misterWhiteHintEnabled);
+              }}
+              className="flex items-center justify-between p-3 bg-secondary rounded-xl hover:bg-secondary/80 transition-colors cursor-pointer"
+            >
+              <div>
+                <div className="font-bold text-xs sm:text-sm">Hint voor Mister White</div>
+                <div className="text-[10px] text-muted-foreground">
+                  {misterWhiteHintEnabled
+                    ? "Aan: Mister White ziet de categorie van het woord"
+                    : "Uit: standaard gameplay zonder hint"}
+                </div>
+              </div>
+              <div className={`w-12 h-6 rounded-full relative transition-colors ${misterWhiteHintEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-background rounded-full shadow-sm transition-all ${misterWhiteHintEnabled ? 'right-1' : 'left-1'}`} />
+              </div>
             </div>
           </div>
         </div>

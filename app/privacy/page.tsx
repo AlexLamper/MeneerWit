@@ -22,7 +22,7 @@ const sections = [
   {
     title: "Lokale opslag (Local Storage)",
     content:
-      "Om bepaalde instellingen (zoals thema en geluidsvoorkeuren) te onthouden, kan de applicatie gebruik maken van de lokale opslag van uw browser (localStorage). Deze gegevens worden uitsluitend op uw eigen apparaat opgeslagen en worden nooit naar onze servers verzonden.",
+      "Om bepaalde gegevens te onthouden — zoals de spelersnamen die u invoert, spelinstellingen, het scorebord en uw thema- en geluidsvoorkeuren — kan de applicatie gebruik maken van de lokale opslag van uw browser (localStorage). Deze gegevens worden uitsluitend op uw eigen apparaat opgeslagen en worden nooit naar onze servers verzonden.",
   },
   {
     title: "Cookies",
@@ -68,7 +68,7 @@ export default function PrivacybeleidPage() {
             Privacybeleid
           </h1>
           <p className="text-sm text-muted-foreground">
-            Laatst bijgewerkt: mei 2026 &nbsp;·&nbsp; meneerwit.com
+            Laatst bijgewerkt: juli 2026 &nbsp;·&nbsp; meneerwit.com
           </p>
         </div>
 

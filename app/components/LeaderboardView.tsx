@@ -6,7 +6,7 @@ interface LeaderboardViewProps {
   playSound: (type: 'click' | 'win' | 'lose') => void;
 }
 
-export default function LeaderboardView({ onBack, playSound }: LeaderboardViewProps) {
+export default function LeaderboardView({ onBack }: LeaderboardViewProps) {
   const [leaderboard, setLeaderboard] = useState<PlayerStats[]>([]);
 
   useEffect(() => {

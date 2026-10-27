@@ -110,6 +110,9 @@ export const updateLeaderboard = (gameState: GameState, mwGuessedCorrectly: bool
 
     if (isWinner) stats.wins++;
     stats.score += pointsEarned;
+    if (mwGuessedCorrectly && player.role === "Mister White") {
+      stats.misterWhiteGuessWins = (stats.misterWhiteGuessWins || 0) + 1;
+    }
   });
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(leaderboard));

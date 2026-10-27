@@ -2,6 +2,7 @@ import { GameState } from "@/lib/gameLogic";
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { ChevronRight } from "lucide-react";
+import { PlayerAvatar, RoleBadge } from "./GameBits";
 
 interface EndGameProps {
   gameState: GameState | null;
@@ -10,7 +11,7 @@ interface EndGameProps {
   playSound: (type: 'click' | 'win' | 'lose') => void;
 }
 
-export default function EndGame({ gameState, onRestart, onHome, playSound }: EndGameProps) {
+export default function EndGame({ gameState, onRestart, onHome }: EndGameProps) {
   useEffect(() => {
     if (gameState?.winner) {
       const duration = 3 * 1000;
@@ -40,7 +41,9 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
   return (
     <div className="flex flex-col h-full p-6 items-center justify-center text-center animate-zoom-in">
       <div className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-muted-foreground">Einde Spel</div>
-      <h2 className="text-5xl font-black mb-8 leading-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
+      <h2 className={`text-5xl font-black mb-8 leading-tight tracking-tight animate-pop-in ${
+        gameState.winner === "Burgers" ? "text-burger" : gameState.winner === "Mister White" ? "text-misterwhite" : "text-undercover"
+      }`}>
         {gameState.winner === "Burgers" ? "Burgers winnen!" : 
          gameState.winner === "Mister White" ? "Mister White wint!" : 
          "Infiltranten winnen!"}
@@ -52,13 +55,14 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
           <span>Rol & Woord</span>
         </div>
         {gameState.players.map(player => (
-          <div key={player.id} className={`flex justify-between items-center p-4 rounded-2xl transition-all hover:scale-[1.01] ${player.isEliminated ? 'bg-secondary opacity-60' : 'bg-secondary hover:bg-secondary/80'}`}>
-            <div className="font-bold flex items-center gap-2">
+          <div key={player.id} className={`flex justify-between items-center gap-3 px-4 py-3 rounded-2xl transition-all hover:scale-[1.01] ${player.isEliminated ? 'bg-secondary opacity-60' : 'bg-secondary hover:bg-secondary/80'}`}>
+            <div className="font-bold flex items-center gap-2.5 min-w-0">
+              <PlayerAvatar name={player.name} id={player.id} muted={player.isEliminated} />
               {player.isEliminated && <span className="text-xs">💀</span>}
-              {player.name}
+              <span className="truncate">{player.name}</span>
             </div>
-            <div className="text-right">
-              <div className="text-sm font-black">{player.role}</div>
+            <div className="text-right flex flex-col items-end gap-1 shrink-0">
+              <RoleBadge role={player.role} />
               {player.word && <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{player.word}</div>}
             </div>
           </div>
@@ -68,14 +72,14 @@ export default function EndGame({ gameState, onRestart, onHome, playSound }: End
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <button 
           onClick={onRestart}
-          className="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02] flex items-center justify-center gap-2"
+          className="w-full py-5 btn-game rounded-2xl font-bold text-xl flex items-center justify-center gap-2"
         >
           Opnieuw spelen
           <ChevronRight className="w-5 h-5" />
         </button>
         <button 
           onClick={onHome}
-          className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg active:scale-95 transition-all hover:bg-secondary/80 hover:scale-[1.02]"
+          className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-lg"
         >
           Terug naar start
         </button>

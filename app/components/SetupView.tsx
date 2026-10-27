@@ -199,7 +199,7 @@ export default function SetupView({
       <button 
         disabled={!isValid}
         onClick={onStartGame}
-        className="mt-2 w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold text-lg disabled:opacity-30 transition-all active:scale-95 hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2"
+        className="mt-2 w-full py-3 btn-game rounded-xl font-bold text-lg disabled:opacity-30 flex items-center justify-center gap-2"
       >
         Start spel
         <ChevronRight className="w-5 h-5" />

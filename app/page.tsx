@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { GameState, getCategoryForWordPair, getInitialRoles, setupGame } from "@/lib/gameLogic";
-import { WORD_PAIRS } from "@/lib/gameData";
+import { CATEGORIES, WORD_PAIRS } from "@/lib/gameData";
 import { updateLeaderboard } from "@/lib/leaderboard";
 import HomeView from "./components/HomeView";
 import SetupView from "./components/SetupView";
@@ -66,6 +66,23 @@ export default function Home() {
     setView("setup");
   };
   
+  const isPlaceholderName = (name: string, index: number) => name === `Speler ${index + 1}`;
+
+  // Pre-fill the name field with a name the player already has (replays and
+  // "Nieuwe woorden"), so re-dealing cards doesn't wipe names.
+  const prefillName = (state: GameState, index: number) => {
+    const name = state.players[index]?.name ?? "";
+    setPlayerNameInput(isPlaceholderName(name, index) ? "" : name);
+  };
+
+  // First player still in the game at or after `from`, or -1.
+  const nextAliveIndex = (state: GameState, from: number) => {
+    for (let i = from; i < state.players.length; i++) {
+      if (!state.players[i].isEliminated) return i;
+    }
+    return -1;
+  };
+
   const handleStartGame = () => {
     playSound('click');
     // Use saved names if available, otherwise default
@@ -88,7 +105,7 @@ export default function Home() {
     // Reset custom words after starting so they don't persist to the next game
     setCustomWordPair({ burger: "", undercover: "" }); 
     
-    setPlayerNameInput("");
+    prefillName(state, 0);
   };
 
   const handleNextPlayer = () => {
@@ -106,13 +123,11 @@ export default function Home() {
     
     setGameState({ ...gameState, players: updatedPlayers });
 
-    if (currentPlayerIndex < gameState.players.length - 1) {
-      const nextIndex = currentPlayerIndex + 1;
+    const nextIndex = nextAliveIndex(gameState, currentPlayerIndex + 1);
+    if (nextIndex !== -1) {
       setCurrentPlayerIndex(nextIndex);
       setIsCardOpen(false);
-      // Pre-fill next name
-      // setPlayerNameInput(savedNames[nextIndex] || `Speler ${nextIndex + 1}`);
-      setPlayerNameInput("");
+      prefillName({ ...gameState, players: updatedPlayers }, nextIndex);
     } else {
       setView("game-round");
     }
@@ -141,8 +156,13 @@ export default function Home() {
   const handleMisterWhiteGuess = () => {
     if (!gameState) return;
     
-    const isCorrect = misterWhiteGuess.toLowerCase().trim() === gameState.wordPair.burger.toLowerCase().trim();
+    // Case-, accent- and spacing-insensitive, so "creme brulee" matches "Crème brûlée".
+    const normalize = (s: string) =>
+      s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
+    const isCorrect = normalize(misterWhiteGuess) === normalize(gameState.wordPair.burger);
     
+    if (!misterWhiteGuess.trim()) return;
+
     if (isCorrect) {
       playSound('win');
       const finalState = { ...gameState, winner: "Mister White" } as GameState;
@@ -164,8 +184,16 @@ export default function Home() {
 
   const handleNewWords = () => {
     if (!gameState) return;
-    const newWordPair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
-    const newCategory = getCategoryForWordPair(newWordPair) ?? "Algemeen";
+    // Stay in the category the game was set up with (custom words are a single
+    // pair, so fall back to the chosen category for those), and avoid dealing
+    // the same pair again.
+    const basePool = CATEGORIES[selectedCategory] ?? WORD_PAIRS;
+    const pool = basePool.filter(
+      (p) => p.burger !== gameState.wordPair.burger || p.undercover !== gameState.wordPair.undercover
+    );
+    const source = pool.length > 0 ? pool : basePool;
+    const newWordPair = source[Math.floor(Math.random() * source.length)];
+    const newCategory = getCategoryForWordPair(newWordPair) ?? selectedCategory;
     
     const updatedPlayers = gameState.players.map(p => ({
       ...p,
@@ -173,21 +201,26 @@ export default function Home() {
       hasSeenCard: false
     }));
 
-    // Choose a new random starting player (avoiding Mister White if we treat this as a restart of the round)
-    let newStartingPlayerId = Math.floor(Math.random() * gameState.players.length);
-    while (updatedPlayers[newStartingPlayerId].role === "Mister White") {
-      newStartingPlayerId = (newStartingPlayerId + 1) % gameState.players.length;
-    }
+    // Choose a new random starting player among those still in the game,
+    // avoiding Mister White when possible.
+    const alive = updatedPlayers.filter(p => !p.isEliminated);
+    const candidates = alive.filter(p => p.role !== "Mister White");
+    const starterPool = candidates.length > 0 ? candidates : alive;
+    const newStartingPlayerId = starterPool[Math.floor(Math.random() * starterPool.length)].id;
 
-    setGameState({ 
+    const newState: GameState = {
       ...gameState, 
       wordPair: newWordPair, 
       selectedCategory: newCategory,
       misterWhiteHint: gameState.misterWhiteHintEnabled ? `Categorie: ${newCategory}` : null,
       players: updatedPlayers,
       startingPlayerId: newStartingPlayerId
-    });
-    setCurrentPlayerIndex(0);
+    };
+    setGameState(newState);
+    const first = Math.max(0, nextAliveIndex(newState, 0));
+    setCurrentPlayerIndex(first);
+    setIsCardOpen(false);
+    prefillName(newState, first);
     setView("card-phase");
     playSound('click');
   };
@@ -433,13 +466,13 @@ export default function Home() {
             <div className="flex flex-col gap-3">
               <button 
                 onClick={confirmQuit}
-                className="w-full py-4 bg-destructive text-destructive-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+                className="w-full py-4 btn-game-danger rounded-2xl font-bold text-xl"
               >
                 Ja, stop spel
               </button>
               <button 
                 onClick={cancelQuit}
-                className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all"
+                className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-xl"
               >
                 Nee, ga door
               </button>
@@ -462,7 +495,7 @@ export default function Home() {
             
             <button 
               onClick={handleCloseGuessResult}
-              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+              className="w-full py-4 btn-game rounded-2xl font-bold text-xl"
             >
               Doorgaan
             </button>

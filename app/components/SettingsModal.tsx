@@ -45,11 +45,11 @@ export default function SettingsModal({ onClose, settings, onSettingsChange, pla
             </div>
           </div>
 
-          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-bold">Versie 1.0.2 • Meneer Wit - Door Alex Lamper</p>
+          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-bold">Versie 1.0.8 • Meneer Wit - Door Alex Lamper</p>
         </div>
         <button 
           onClick={onClose}
-          className="mt-8 w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg active:scale-95 hover:scale-[1.02] transition-all"
+          className="mt-8 w-full py-4 btn-game rounded-2xl font-bold"
         >
           Opslaan
         </button>

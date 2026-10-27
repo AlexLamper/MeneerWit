@@ -41,7 +41,7 @@ export default function RulesModal({ onClose, playSound }: RulesModalProps) {
         </div>
         <button 
           onClick={() => { playSound('click'); onClose(); }}
-          className="mt-6 sm:mt-8 w-full py-3 sm:py-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg active:scale-95 hover:scale-[1.02] transition-all shrink-0"
+          className="mt-6 sm:mt-8 w-full py-3 sm:py-4 btn-game rounded-2xl font-bold shrink-0"
         >
           Begrepen!
         </button>

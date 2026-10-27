@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GameState, Player } from "@/lib/gameLogic";
-import { Fingerprint, Skull } from "lucide-react";
+import { Vote } from "lucide-react";
+import { PlayerAvatar, RoleIcon, roleSurfaceClass, roleTextClass, RoleBadge } from "./GameBits";
 
 interface VotingPhaseProps {
   gameState: GameState | null;
@@ -72,15 +73,14 @@ export default function VotingPhase({
               onClick={() => !player.isEliminated && handlePlayerClick(player)}
               className={`pl-2 pr-2 py-3 sm:p-4 rounded-xl sm:rounded-3xl border-2 transition-all relative group flex flex-row items-center text-left min-h-[3.5rem] sm:min-h-0 ${player.isEliminated ? 'bg-secondary border-transparent opacity-50 cursor-not-allowed' : 'border-border hover:border-primary hover:bg-secondary/30 bg-card shadow-sm active:scale-95'}`}
             >
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center mr-1.5 sm:mr-2 text-sm sm:text-2xl transition-colors ${player.isEliminated ? 'bg-secondary' : 'bg-primary text-primary-foreground group-hover:scale-110'}`}>
-                {player.isEliminated ? <Skull className="w-5 h-5 sm:w-5 sm:h-5" /> : <Fingerprint className="w-5 h-5 sm:w-5 sm:h-5" />}
-              </div>
+              <span className="mr-2 sm:mr-3 transition-transform group-hover:scale-110"><PlayerAvatar name={player.name} id={player.id} size={34} muted={player.isEliminated} /></span>
               <div className="min-w-0 flex-1">
                 <div className="font-bold text-sm sm:text-lg leading-tight break-words">{player.name}</div>
                 <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
                   {player.isEliminated ? 'Geëlimineerd' : 'Stemmen'}
                 </div>
               </div>
+              {!player.isEliminated && <Vote className="w-4 h-4 text-muted-foreground shrink-0" />}
             </button>
           ))}
         </div>
@@ -98,13 +98,13 @@ export default function VotingPhase({
                 <div className="flex flex-col gap-3">
                   <button 
                     onClick={handleConfirmClick}
-                    className="w-full py-4 bg-destructive text-destructive-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg hover:bg-destructive/90"
+                    className="w-full py-4 btn-game-danger rounded-2xl font-bold text-xl"
                   >
                     Elimineren
                   </button>
                   <button 
                     onClick={() => { playSound('click'); setRevealedPlayer(null); }}
-                    className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-secondary/80"
+                    className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-xl"
                   >
                     Annuleren
                   </button>
@@ -112,16 +112,18 @@ export default function VotingPhase({
               </>
             ) : (
               <>
-                <h3 className="text-2xl font-bold mb-2">{revealedPlayer.name} was...</h3>
-                
-                <div className="mb-8 p-6 bg-secondary rounded-2xl animate-zoom-in">
-                  <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Rol</div>
-                  <div className="text-4xl font-black">{revealedPlayer.role}</div>
+                <div className="flex justify-center mb-3"><PlayerAvatar name={revealedPlayer.name} id={revealedPlayer.id} size={56} muted /></div>
+                <h3 className="text-2xl font-black mb-4">{revealedPlayer.name} was...</h3>
+
+                <div className={`mb-8 p-6 rounded-2xl border-2 animate-pop-in ${roleSurfaceClass(revealedPlayer.role)}`}>
+                  <RoleIcon role={revealedPlayer.role} className={`w-8 h-8 mx-auto mb-2 ${roleTextClass(revealedPlayer.role)}`} />
+                  <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Rol</div>
+                  <div className={`text-4xl font-black ${roleTextClass(revealedPlayer.role)}`}>{revealedPlayer.role}</div>
                 </div>
 
                 <button 
                   onClick={handleFinalEliminate}
-                  className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+                  className="w-full py-4 btn-game rounded-2xl font-bold text-xl"
                 >
                   Doorgaan
                 </button>
@@ -134,7 +136,8 @@ export default function VotingPhase({
       {showMisterWhiteGuess && (
         <div className="fixed inset-0 bg-background z-50 flex flex-col items-center justify-center p-6 text-foreground animate-fade-in">
           <div className="absolute top-12 text-sm font-bold uppercase tracking-[0.3em] opacity-50">Ontmaskerd!</div>
-          <h2 className="text-5xl font-black mb-4 text-center">Mister White</h2>
+          <div className="mb-4 animate-pop-in"><RoleBadge role="Mister White" large /></div>
+          <h2 className="text-5xl font-black mb-4 text-center tracking-tight">Mister White</h2>
           <p className="text-xl mb-12 text-center opacity-70 max-w-xs">Je kunt nog winnen! Raad het woord van de Burgers:</p>
           
           <div className="w-full max-w-xs relative">
@@ -142,16 +145,18 @@ export default function VotingPhase({
               type="text" 
               value={misterWhiteGuess}
               onChange={(e) => setMisterWhiteGuess(e.target.value)}
-              className="w-full p-6 bg-secondary rounded-3xl text-center font-bold text-2xl focus:outline-none border-2 border-border mb-8 placeholder:text-muted-foreground hover:bg-secondary/80 transition-colors"
+              className="w-full p-6 bg-secondary rounded-3xl text-center font-bold text-2xl focus:outline-none border-2 border-border mb-8 placeholder:text-muted-foreground hover:bg-secondary/80 transition-colors focus:border-primary"
               placeholder="Typ het woord..."
               autoFocus
               autoComplete="off"
+              onKeyDown={(e) => { if (e.key === "Enter" && misterWhiteGuess.trim()) onMisterWhiteGuess(); }}
             />
           </div>
 
           <button 
             onClick={onMisterWhiteGuess}
-            className="w-full max-w-xs py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-2xl hover:scale-[1.02]"
+            disabled={!misterWhiteGuess.trim()}
+            className="w-full max-w-xs py-5 btn-game rounded-2xl font-bold text-xl"
           >
             Bevestig Woord
           </button>

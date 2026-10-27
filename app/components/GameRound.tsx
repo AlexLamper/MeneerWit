@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { GameState, Player } from "@/lib/gameLogic";
-import { RefreshCcw, Settings, UserPlus, Eye, User, ChevronRight } from "lucide-react";
+import { RefreshCcw, Settings, UserPlus, Eye, ChevronRight } from "lucide-react";
+import { PlayerAvatar, RoleBadge } from "./GameBits";
 import SettingsModal from "./SettingsModal";
 
 interface GameRoundProps {
@@ -71,15 +72,16 @@ export default function GameRound({
   });
   const startingPlayer = orderedActivePlayers[0] ?? null;
 
+  const players = gameState?.players;
   useEffect(() => {
-    if (!gameState) return;
-    if (gameState.players.length > prevPlayerCount.current) {
-      const addedPlayer = gameState.players[gameState.players.length - 1];
+    if (!players) return;
+    if (players.length > prevPlayerCount.current) {
+      const addedPlayer = players[players.length - 1];
       // Use setTimeout to avoid synchronous state update during effect
       setTimeout(() => setNewPlayer(addedPlayer), 0);
     }
-    prevPlayerCount.current = gameState.players.length;
-  }, [gameState?.players.length]);
+    prevPlayerCount.current = players.length;
+  }, [players]);
 
   if (!gameState) return null;
 
@@ -132,7 +134,8 @@ export default function GameRound({
 
   return (
     <div className="flex flex-col h-full p-4 sm:p-6 animate-fade-in overflow-hidden pt-8 sm:pt-12">
-      <h2 className="text-2xl sm:text-3xl font-black mb-2 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Omschrijf-fase</h2>
+      <span className="self-start bg-brand rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider whitespace-nowrap mb-1.5">Ronde {gameState.players.filter(p => p.isEliminated).length + 1}</span>
+      <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Omschrijf-fase</h2>
       <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-8">
         {viewMode 
           ? "Selecteer je eigen kaart om je woord te zien." 
@@ -192,18 +195,16 @@ export default function GameRound({
             >
               {/* Order Badge */}
               {!player.isEliminated && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs sm:text-sm font-black shadow-md border-2 border-background z-10">
+                <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-brand rounded-full flex items-center justify-center text-xs sm:text-sm font-black shadow-md border-2 border-background z-10">
                   {playerOrder}
                 </div>
               )}
 
-              <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-secondary rounded-full flex items-center justify-center mr-1.5 sm:mr-2 text-muted-foreground">
-                <User className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
+              <span className="mr-2 sm:mr-3"><PlayerAvatar name={player.name} id={player.id} size={34} muted={player.isEliminated} /></span>
               <div className="min-w-0 flex-1">
                 <div className="font-bold text-sm sm:text-lg leading-tight break-words">{player.name}</div>
-                <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                  {player.isEliminated ? 'Geëlimineerd' : isStartingPlayer ? 'Start Speler' : 'Actief'}
+                <div className={`text-[10px] sm:text-xs uppercase tracking-wider ${isStartingPlayer ? 'text-primary font-black' : 'text-muted-foreground font-medium'}`}>
+                  {player.isEliminated ? 'Geëlimineerd' : isStartingPlayer ? 'Begint' : 'Actief'}
                 </div>
               </div>
             </button>
@@ -214,7 +215,7 @@ export default function GameRound({
       <div className="mt-auto space-y-4">
         <button 
           onClick={onStartVoting}
-          className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-primary/90 hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2"
+          className="w-full py-4 btn-game rounded-2xl font-bold text-xl flex items-center justify-center gap-2"
         >
           Ga naar stemmen
           <ChevronRight className="w-5 h-5" />
@@ -269,13 +270,13 @@ export default function GameRound({
             <div className="flex flex-col gap-3">
               <button 
                 onClick={handleConfirmView}
-                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+                className="w-full py-4 btn-game rounded-2xl font-bold text-xl"
               >
                 Ja, toon mijn woord
               </button>
               <button 
                 onClick={handleCloseModal}
-                className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-secondary/80"
+                className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-xl"
               >
                 Annuleren
               </button>
@@ -287,16 +288,16 @@ export default function GameRound({
       {/* Word Reveal Modal */}
       {showWord && viewingPlayer && (
         <div className="fixed inset-0 bg-card text-card-foreground z-50 flex flex-col items-center justify-center p-6 animate-zoom-in">
-          <div className="text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Rol</div>
-          <div className="text-3xl font-black mb-8">
-            {viewingPlayer.role === "Burger" ? "Burger" : 
-             viewingPlayer.role === "Undercover" ? "Undercover" : "Mister White"}
-          </div>
-          
-          <div className="w-full max-w-xs h-px bg-border mb-8" />
-          
-          <div className="text-sm font-bold uppercase tracking-[0.2em] mb-4 opacity-50">Jouw Woord</div>
-          <div className="text-4xl font-black break-all mb-12 text-center">
+          {viewingPlayer.role === "Mister White" && (
+            <>
+              <div className="text-sm font-bold uppercase tracking-[0.2em] mb-3 text-muted-foreground">Jouw Rol</div>
+              <div className="mb-8"><RoleBadge role="Mister White" large /></div>
+              <div className="w-full max-w-xs h-px bg-border mb-8" />
+            </>
+          )}
+
+          <div className="text-sm font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Woord</div>
+          <div className={`text-4xl font-black break-words mb-12 text-center ${viewingPlayer.role === "Mister White" ? "text-muted-foreground" : "text-brand"}`}>
             {viewingPlayer.role === "Mister White" ? "???" : viewingPlayer.word}
           </div>
 
@@ -309,7 +310,7 @@ export default function GameRound({
 
           <button 
             onClick={handleCloseModal}
-            className="w-full max-w-xs py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-secondary/80"
+            className="w-full max-w-xs py-4 btn-game-secondary rounded-2xl font-bold text-xl"
           >
             Sluiten
           </button>
@@ -321,18 +322,18 @@ export default function GameRound({
         <div className="fixed inset-0 bg-background/80 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-fade-in">
           <div className="bg-card text-card-foreground rounded-[2.5rem] p-8 max-w-md w-full text-center shadow-2xl border border-border">
             <h3 className="text-2xl font-bold mb-2">Nieuwe woorden?</h3>
-            <p className="text-muted-foreground mb-8">Iedereen krijgt een nieuw woord. De rollen blijven hetzelfde.</p>
+            <p className="text-muted-foreground mb-8">Iedereen krijgt een nieuw woord en bekijkt zijn kaart opnieuw. De rollen blijven hetzelfde.</p>
             
             <div className="flex flex-col gap-3">
               <button 
                 onClick={confirmNewWords}
-                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+                className="w-full py-4 btn-game rounded-2xl font-bold text-xl"
               >
                 Ja, nieuwe woorden
               </button>
               <button 
                 onClick={() => setShowNewWordConfirm(false)}
-                className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all hover:bg-secondary/80"
+                className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-xl"
               >
                 Annuleren
               </button>
@@ -359,7 +360,7 @@ export default function GameRound({
                 setNewPlayer(null);
                 playSound('click');
               }}
-              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-xl active:scale-95 transition-all shadow-lg"
+              className="w-full py-4 btn-game rounded-2xl font-bold text-xl"
             >
               Bekijk Woord
             </button>

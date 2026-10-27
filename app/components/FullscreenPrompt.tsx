@@ -66,13 +66,13 @@ export function FullscreenPrompt() {
         <div className="flex flex-col gap-3">
           <button 
             onClick={handleEnableFullscreen}
-            className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg active:scale-95 transition-all shadow-lg"
+            className="w-full py-4 btn-game rounded-2xl font-bold text-lg"
           >
             Ja, volledig scherm
           </button>
           <button 
             onClick={handleDismiss}
-            className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg active:scale-95 transition-all"
+            className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-lg"
           >
             Nee, bedankt
           </button>

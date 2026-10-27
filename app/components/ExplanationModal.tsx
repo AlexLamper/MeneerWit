@@ -115,7 +115,7 @@ export default function ExplanationModal({ onClose, playSound }: ExplanationModa
             )}
             <button 
               onClick={handleNext}
-              className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl font-bold active:scale-95 transition-all shadow-lg"
+              className="flex-1 py-3 btn-game rounded-xl font-bold"
             >
               {step === steps.length - 1 ? "Begrepen!" : "Volgende"}
             </button>

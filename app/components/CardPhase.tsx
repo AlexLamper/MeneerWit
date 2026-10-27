@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { GameState } from "@/lib/gameLogic";
 import { getPlayerNames } from "@/lib/leaderboard";
+import { PlayerAvatar, RoleBadge } from "./GameBits";
 
 interface CardPhaseProps {
   gameState: GameState | null;
@@ -77,8 +78,12 @@ export default function CardPhase({
     <div className="flex flex-col h-full p-4 sm:p-6 items-center justify-center text-center">
       {!isCardOpen ? (
         <div className="w-full max-w-xs animate-fade-in">
-          <h2 className="text-xl sm:text-2xl font-black mb-2 bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Geef de telefoon aan</h2>
-          <div className="text-3xl sm:text-4xl font-black mb-6 sm:mb-8">Speler {currentPlayerIndex + 1}</div>
+          <div className="flex justify-center mb-4">
+            <PlayerAvatar name={playerNameInput || `${currentPlayerIndex + 1}`} id={currentPlayer.id} size={64} />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black mb-1 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">Geef de telefoon aan</h2>
+          <div className="text-3xl sm:text-4xl font-black tracking-tight">{playerNameInput.trim() || `Speler ${currentPlayerIndex + 1}`}</div>
+          <div className="text-xs font-bold text-muted-foreground mt-1 mb-6 sm:mb-8">{currentPlayerIndex + 1} van {gameState.players.length}</div>
           
           <div className="mb-6 sm:mb-8 text-left">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 ml-1">Voer je naam in</p>
@@ -116,40 +121,41 @@ export default function CardPhase({
 
           <button 
             onClick={handleViewCardClick}
-            className="w-full py-3 sm:py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg sm:text-xl active:scale-95 transition-all shadow-lg hover:bg-primary/90 hover:scale-[1.02]"
+            className="w-full py-3 sm:py-4 btn-game rounded-2xl font-bold text-lg sm:text-xl"
           >
             Bekijk kaart
           </button>
         </div>
       ) : (
         <div className="w-full max-w-xs">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Kaart {currentPlayerIndex + 1} / {gameState.players.length}</div>
           <div className="aspect-3/4 w-full mb-8 perspective-1000">
             <div 
               onClick={() => { if (!showWord) handleConfirmReveal(); }}
-              className={`relative w-full h-full transition-transform duration-700 preserve-3d cursor-pointer ${showWord ? 'rotate-y-180' : ''}`}
+              className={`relative w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.68,-0.3,0.32,1.3)] preserve-3d cursor-pointer ${showWord ? 'rotate-y-180' : ''}`}
             >
               {/* Front of the card (Hidden) */}
-              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-zinc-800 dark:to-zinc-900 rounded-[2.5rem] shadow-2xl flex flex-col items-center justify-center p-8 border-2 border-border/60">
-                <div className="w-20 h-20 bg-foreground/8 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-4xl text-foreground font-black">?</span>
+              <div className="absolute inset-0 backface-hidden card-front rounded-[2.5rem] flex flex-col items-center justify-center p-8">
+                <div className="w-20 h-20 bg-white/20 border-2 border-white/50 rounded-full flex items-center justify-center mb-6">
+                  <span className="text-4xl text-white font-black">?</span>
                 </div>
-                <h3 className="text-foreground text-2xl font-black mb-2">Tik om te onthullen</h3>
-                <p className="text-muted-foreground text-sm">Zorg dat niemand meekijkt!</p>
+                <h3 className="text-white text-2xl font-black mb-2">Tik om te onthullen</h3>
+                <p className="text-white/80 text-sm font-medium">Zorg dat niemand meekijkt!</p>
               </div>
 
               {/* Back of the card (Revealed) */}
               <div className="absolute inset-0 backface-hidden rotate-y-180 bg-card text-card-foreground rounded-[2.5rem] shadow-2xl flex flex-col items-center justify-center p-8 border-2 border-border overflow-hidden">
                 {currentPlayer.role === "Mister White" && (
                   <>
-                    <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Rol</div>
-                    <div className="text-3xl font-black mb-8 text-foreground">Mister White</div>
+                    <div className="text-xs font-bold uppercase tracking-[0.2em] mb-3 text-muted-foreground">Jouw Rol</div>
+                    <div className="mb-8"><RoleBadge role="Mister White" large /></div>
                     
                     <div className="w-16 h-px bg-border mb-8" />
                   </>
                 )}
                 
                 <div className="text-xs font-bold uppercase tracking-[0.2em] mb-4 text-muted-foreground">Jouw Woord</div>
-                <div className="text-4xl font-black text-foreground tracking-tight">
+                <div className={`text-4xl font-black tracking-tight break-words ${currentPlayer.role === "Mister White" ? "text-muted-foreground" : "text-brand"}`}>
                   {currentPlayer.role === "Mister White" ? "???" : currentPlayer.word}
                 </div>
                 
@@ -173,7 +179,7 @@ export default function CardPhase({
           {showWord && (
             <button 
               onClick={() => { playSound('click'); onNextPlayer(); }}
-              className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-bold text-lg active:scale-95 transition-all hover:bg-secondary/80 animate-fade-in border-2 border-border"
+              className="w-full py-4 btn-game-secondary rounded-2xl font-bold text-lg animate-fade-in"
             >
               Verberg & geef door
             </button>
